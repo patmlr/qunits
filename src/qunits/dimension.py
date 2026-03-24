@@ -1,0 +1,23 @@
+class Dimension:
+    """The base class for dimensions."""
+
+
+class Time(Dimension): ...
+
+
+class Length(Dimension): ...
+
+
+class Mass(Dimension): ...
+
+
+class ElectricCurrent(Dimension): ...
+
+
+class Temperature(Dimension): ...
+
+
+class AmountOfSubstance(Dimension): ...
+
+
+class LuminousIntensity(Dimension): ...

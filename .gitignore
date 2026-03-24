@@ -1,0 +1,11 @@
+.idea
+.ruff_cache
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+__pycache__
+
+/build/
+/dist/
+/wheelhouse/
+*.egg-info/
