@@ -12,7 +12,7 @@ def generate_units() -> None:
         f.write('class si:\n    """The SI unit system."""\n\n')
 
         for symbol, dimension in SYMBOLS.items():
-            for prefix_str in PREFIX_DICT:
+            for prefix_str, prefix_exp in PREFIX_DICT.items():
                 factor = SYMBOL_FACTORS[symbol]
                 prefix = Prefix.from_str(prefix_str)
                 unit_name = f"{prefix_str}{symbol}"
@@ -22,7 +22,7 @@ def generate_units() -> None:
 
                 f.write(
                     f"    {unit_name} = Unit("
-                    f"factor={factor: .1e}, prefix={prefix: .1e}, dimension={dimension.__name__})\n"
+                    f'{prefix * factor: .1e}, {dimension.__name__}, symbol="{symbol}", prefix_exp={prefix_exp})\n'
                 )
 
 

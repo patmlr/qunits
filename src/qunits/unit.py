@@ -1,7 +1,6 @@
-import math
 from typing import Any, overload
 
-from numpy import any, complexfloating, floating, integer, number
+from numpy import any, floating, integer
 from numpy.typing import NDArray
 
 from qunits.dimension import (
@@ -14,14 +13,14 @@ from qunits.dimension import (
     Mass,
     Temperature,
     Time,
-    find_dimension,
+    add_dimension,
 )
 from qunits.prefix import PREFIX_DICT_EXP
 
-type int_like = integer | int
-type scalar = int | integer | float | floating
-type complexscalar = number | scalar | complex | complexfloating
-type numeric = complexscalar | NDArray[Any]
+type int_like = int | integer
+type float_like = float | floating
+type scalar = int_like | float_like
+type numeric = scalar | NDArray[Any]
 
 SYMBOLS = {
     "m": Length,
@@ -44,11 +43,158 @@ SYMBOL_FACTORS: dict[str, float] = {
 }
 
 
-_unit_cache: dict[tuple[bytes, float, float], "Unit"] = {}
+_unit_cache: dict[tuple[tuple[int, ...], float], "Unit"] = {}
+
+
+class Unit:
+    """The base class for units."""
+
+    __array_priority__ = 1000
+
+    def __new__(
+        cls,
+        scale: float = 1.0,
+        dimension: type[Dimension] = Dimensionless,
+        symbol: str | None = None,
+        prefix_exp: int = 0,
+    ) -> "Unit":
+        key = (dimension.vec, scale)
+        return _unit_cache.setdefault(key, super().__new__(cls))
+
+    def __init__(
+        self,
+        scale: float = 1.0,
+        dimension: type[Dimension] = Dimensionless,
+        symbol: str | None = None,
+        prefix_exp: int = 0,
+    ) -> None:
+        """The base class for units.
+
+        Args:
+            scale: The scale by which the unit is multiplied (e.g., 1 for Tesla, 1e-4 for Gauss).
+            dimension: The dimension of the unit (e.g., Length, Mass, Time).
+            symbol: The symbol of the unit (e.g., "m" for meter, "s" for second).
+            prefix_exp: The exponent of the prefix (e.g., 3 for kilo, -3 for milli).
+        """
+        self.scale = scale
+        self.dimension = dimension
+
+        if symbol is None:
+            symbol = dimension.si_symbol if scale == 1.0 else "?"
+        self.symbol = symbol
+
+        self.prefix_exp = prefix_exp
+
+    @property
+    def dim(self) -> type[Dimension]:
+        return self.dimension
+
+    @property
+    def d(self) -> type[Dimension]:
+        return self.dimension
+
+    def si(self) -> "Unit":
+        """Convert the unit to its SI equivalent."""
+        return Unit(self.scale, dimension=self.d, symbol=self.symbol)
+
+    def __repr__(self) -> str:
+        return f"Unit({self.scale: .1e}, {self.d.name})"
+
+    def __str__(self) -> str:
+        prefix = PREFIX_DICT_EXP.get(self.prefix_exp, "")
+
+        if self.symbol == "?":
+            return f"{prefix}:{self.__repr__()}"
+
+        return prefix + self.symbol
+
+    @overload
+    def __mul__[T: scalar](self, other: T) -> "Quantity[T]": ...
+
+    @overload
+    def __mul__(self, other: NDArray[Any]) -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __mul__(self, other: "Unit") -> "Unit": ...
+
+    def __mul__(self, other):
+        """Multiply two units."""
+        if isinstance(other, Unit):
+            dim_vec = tuple(a + b for a, b in zip(self.d.vec, other.d.vec))
+            dimension = add_dimension(dim_vec)
+
+            scale = self.scale * other.scale
+            return Unit(scale=scale, dimension=dimension)
+
+        return Quantity(other, self)
+
+    @overload
+    def __rmul__[T: scalar](self, other: T) -> "Quantity[T]": ...
+
+    @overload
+    def __rmul__(self, other: NDArray[Any]) -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __rmul__(self, other: "Unit") -> "Unit": ...
+
+    def __rmul__(self, other):
+        """Multiply two units."""
+        return self.__mul__(other)
+
+    @overload
+    def __truediv__[T: scalar](self, other: T) -> "Quantity[T]": ...
+
+    @overload
+    def __truediv__(self, other: NDArray[Any]) -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __truediv__(self, other: "Unit") -> "Unit": ...
+
+    def __truediv__(self, other):
+        if isinstance(other, Unit):
+            dim_vec = tuple(a - b for a, b in zip(self.d.vec, other.d.vec))
+            dimension = add_dimension(dim_vec)
+
+            scale = self.scale / other.scale
+            return Unit(scale=scale, dimension=dimension)
+
+        return Quantity(other, self)
+
+    @overload
+    def __rtruediv__[T: scalar](self, other: T) -> "Quantity[T]": ...
+
+    @overload
+    def __rtruediv__(self, other: NDArray[Any]) -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __rtruediv__(self, other: "Unit") -> "Unit": ...
+
+    def __rtruediv__(self, other):
+        """Divide two units."""
+        if isinstance(other, Unit):
+            dim_vec = tuple(a - b for a, b in zip(other.d.vec, self.d.vec))
+            dimension = add_dimension(dim_vec)
+
+            scale = other.scale / self.scale
+            return Unit(scale=scale, dimension=dimension)
+
+        dim_vec = tuple(-x for x in self.d.vec)
+        dimension = add_dimension(dim_vec)
+
+        unit = Unit(scale=1 / self.scale, dimension=dimension)
+        return Quantity(other, unit)
+
+    def __pow__(self, power: int_like) -> "Unit":
+        dim_vec = tuple(x * power for x in self.d.vec)
+        dimension = add_dimension(dim_vec)
+
+        scale = self.scale**power
+        return Unit(scale=scale, dimension=dimension)
 
 
 class Quantity[T: numeric]:
     """The base class for quantities."""
+
     __array_priority__ = 1000
 
     def __init__(self, value: T, unit: "Unit | None" = None) -> None:
@@ -62,16 +208,16 @@ class Quantity[T: numeric]:
         if unit is None:
             unit = Unit()
         self.unit = unit
-    
+
     def __repr__(self) -> str:
         return f"{self.value} {self.unit}"
-    
+
     def __str__(self) -> str:
         return f"{self.value} {self.unit}"
-    
+
     @overload
     def __add__(self, other: scalar) -> "Quantity[T]": ...
-    
+
     @overload
     def __add__[T_: scalar](self, other: "Quantity[T_]") -> "Quantity[T]": ...
 
@@ -80,17 +226,19 @@ class Quantity[T: numeric]:
 
     def __add__(self, other):
         if isinstance(other, Quantity):
-            dim_vec = self.unit.d.vec - other.unit.d.vec
+            u = self.unit
+            dim_vec = tuple(a - b for a, b in zip(u.d.vec, other.unit.d.vec))
             if any(dim_vec):
                 raise ValueError("Dimension mismatch")
 
-            return Quantity(self.value + other.value * other.unit.prefix / self.unit.prefix, self.unit)
+            scale = other.unit.scale / u.scale
+            return Quantity(self.value + other.value * scale, self.unit)
 
         return Quantity(self.value + other, self.unit)
 
     @overload
     def __radd__(self, other: scalar) -> "Quantity[T]": ...
-    
+
     @overload
     def __radd__[T_: scalar](self, other: "Quantity[T_]") -> "Quantity[T]": ...
 
@@ -100,191 +248,134 @@ class Quantity[T: numeric]:
     def __radd__(self, other):
         return self.__add__(other)
 
-    # def __sub__[T_: numeric](self, other: "Quantity[T_]") -> "Quantity[T_]":
-    #     dim_vec = self.unit.d.vec - other.unit.d.vec
-    #     if any(dim_vec):
-    #         raise ValueError("Dimension mismatch")
-
-    #     return Quantity(self.value - other.value * other.unit.prefix / self.unit.prefix, self.unit)
-
-    # def __mul__(self, other):
-    #     if isinstance(other, Quantity):
-    #         return Quantity(self.value * other.value, self.unit * other.unit)
-    #     else:
-    #         return Quantity(self.value * other, self.unit)
-
-    # def __truediv__(self, other):
-    #     if isinstance(other, Quantity):
-    #         return Quantity(self.value / other.value, self.unit / other.unit)
-    #     elif isinstance(other, Unit):
-    #         return Quantity(self.value, self.unit / other)
-    #     else:
-    #         return Quantity(self.value / other, self.unit)
-
-
-class Unit:
-    __array_priority__ = 1000
-    _cache: dict = _unit_cache
-
-    def __new__(cls, factor: float = 1.0, prefix: float = 1.0, dimension: type[Dimension] | None = None) -> "Unit":
-        if dimension is None:
-            dimension = Dimensionless
-
-        key = (dimension.vec.tobytes(), factor, prefix)
-        if key in cls._cache:
-            return cls._cache[key]
-        
-        instance = super().__new__(cls)
-        cls._cache[key] = instance
-        return instance
-
-    def __init__(self, factor: float = 1.0, prefix: float = 1.0, dimension: type[Dimension] | None = None) -> None:
-        """The base class for units.
-
-        Args:
-            factor: The factor by which the unit is multiplied (e.g., 1 for Tesla, 1e-4 for Gauss).
-            prefix: The prefix associated with the unit (e.g., 1e3 for kilo, 1e-3 for milli).
-            dimension: The dimension of the unit (e.g., Length, Mass, Time).
-        """
-        self.factor = factor
-        self.prefix = prefix
-        if dimension is None:
-            dimension = Dimensionless
-        self.dimension = dimension
-
-    @property
-    def dim(self) -> type[Dimension]:
-        return self.dimension
-
-    @property
-    def d(self) -> type[Dimension]:
-        return self.dimension
-
-    def si(self) -> "Unit":
-        """Convert the unit to its SI equivalent."""
-        return Unit(self.factor * self.prefix, dimension=self.dim)
-
-    def __repr__(self) -> str:
-        return f"Unit(factor={self.factor: .1e}, prefix={self.prefix: .1e}, dimension={self.dim.name})"
-
-    def __str__(self) -> str:
-        exp = int(math.log10(self.prefix))
-        symbol = PREFIX_DICT_EXP.get(exp)
-        return f"{symbol}{self.dim.si_symbol}"
+    @overload
+    def __sub__(self, other: scalar) -> "Quantity[T]": ...
 
     @overload
-    def __mul__[T: scalar](self, other: T) -> Quantity[T]: ...
+    def __sub__[T_: scalar](self, other: "Quantity[T_]") -> "Quantity[T]": ...
 
     @overload
-    def __mul__(self, other: NDArray[Any]) -> Quantity[NDArray[Any]]: ...
+    def __sub__(self, other: "Quantity[NDArray[Any]]") -> "Quantity[NDArray[Any]]": ...
+
+    def __sub__(self, other):
+        if isinstance(other, Quantity):
+            u = self.unit
+            dim_vec = tuple(a - b for a, b in zip(u.d.vec, other.unit.d.vec))
+            if any(dim_vec):
+                raise ValueError("Dimension mismatch")
+
+            scale = other.unit.scale / u.scale
+            return Quantity(self.value - other.value * scale, u)
+
+        return Quantity(self.value - other, self.unit)
 
     @overload
-    def __mul__(self, other: "Unit") -> "Unit": ...
+    def __rsub__(self, other: scalar) -> "Quantity[T]": ...
+
+    @overload
+    def __rsub__[T_: scalar](self, other: "Quantity[T_]") -> "Quantity[T]": ...
+
+    @overload
+    def __rsub__(self, other: "Quantity[NDArray[Any]]") -> "Quantity[NDArray[Any]]": ...
+
+    def __rsub__(self, other):
+        if isinstance(other, Quantity):
+            u = self.unit
+            dim_vec = tuple(a - b for a, b in zip(u.d.vec, other.unit.d.vec))
+            if any(dim_vec):
+                raise ValueError("Dimension mismatch")
+
+            scale = other.unit.scale / u.scale
+            return Quantity(other.value * scale - self.value, u)
+
+        return Quantity(other - self.value, self.unit)
+
+    @overload
+    def __mul__(self, other: scalar) -> "Quantity[float]": ...
+
+    @overload
+    def __mul__(self, other: NDArray[Any]) -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __mul__[T_: scalar](self, other: "Quantity[T_]") -> "Quantity[T]": ...
+
+    @overload
+    def __mul__(self, other: "Quantity[NDArray[Any]]") -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __mul__(self, other: "Unit") -> "Quantity[T]": ...
 
     def __mul__(self, other):
-        """Multiply two units."""
+        if isinstance(other, Quantity):
+            return Quantity(self.value * other.value, self.unit * other.unit)
+
         if isinstance(other, Unit):
-            dim_vec = self.d.vec + other.d.vec
-            dimension = find_dimension(dim_vec)
-            if dimension is None:
-                dim_name = f"{self.d.name}{other.d.name}"
-                dimension = type(
-                    dim_name,
-                    (Dimension,),
-                    {"name": dim_name, "vec": dim_vec, "si_symbol": f"{self.d.si_symbol}*{other.d.si_symbol}"},
-                )
+            return Quantity(self.value, self.unit * other)
 
-            factor = self.factor * other.factor
-            prefix = self.prefix * other.prefix
-
-            key = (dim_vec.tobytes(), factor, prefix)
-            if key in self._cache:
-                return self._cache[key]
-
-            unit = Unit(factor=factor, prefix=prefix, dimension=dimension)
-            self._cache[key] = unit
-            return unit
-
-        return Quantity(other, self)
+        return Quantity(self.value * other, self.unit)
 
     @overload
-    def __rmul__[T: scalar](self, other: T) -> Quantity[T]: ...
+    def __rmul__(self, other: scalar) -> "Quantity[float]": ...
 
     @overload
-    def __rmul__(self, other: NDArray[Any]) -> Quantity[NDArray[Any]]: ...
+    def __rmul__(self, other: NDArray[Any]) -> "Quantity[NDArray[Any]]": ...
 
     @overload
-    def __rmul__(self, other: "Unit") -> "Unit": ...
+    def __rmul__[T_: scalar](self, other: "Quantity[T_]") -> "Quantity[T]": ...
+
+    @overload
+    def __rmul__(self, other: "Quantity[NDArray[Any]]") -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __rmul__(self, other: "Unit") -> "Quantity[T]": ...
 
     def __rmul__(self, other):
-        """Multiply two units."""
         return self.__mul__(other)
 
     @overload
-    def __truediv__[T: scalar](self, other: T) -> Quantity[T]: ...
+    def __truediv__(self, other: scalar) -> "Quantity[float]": ...
 
     @overload
-    def __truediv__(self, other: NDArray[Any]) -> Quantity[NDArray[Any]]: ...
+    def __truediv__(self, other: NDArray[Any]) -> "Quantity[NDArray[Any]]": ...
 
     @overload
-    def __truediv__(self, other: "Unit") -> "Unit": ...
+    def __truediv__[T_: scalar](self, other: "Quantity[T_]") -> "Quantity[T]": ...
+
+    @overload
+    def __truediv__(self, other: "Quantity[NDArray[Any]]") -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __truediv__(self, other: "Unit") -> "Quantity[T]": ...
 
     def __truediv__(self, other):
+        if isinstance(other, Quantity):
+            return Quantity(self.value / other.value, self.unit / other.unit)
+
         if isinstance(other, Unit):
-            dim_vec = self.d.vec - other.d.vec
-            dimension = find_dimension(dim_vec)
-            if dimension is None:
-                dim_name = f"{self.d.name}Per{other.d.name}"
-                dimension = type(
-                    dim_name,
-                    (Dimension,),
-                    {"name": dim_name, "vec": dim_vec, "si_symbol": f"{self.d.si_symbol}/{other.d.si_symbol}"},
-                )
+            return Quantity(self.value, self.unit / other)
 
-            factor = self.factor / other.factor
-            prefix = self.prefix / other.prefix
-
-            key = (dim_vec.tobytes(), factor, prefix)
-            if key in self._cache:
-                return self._cache[key]
-
-            unit = Unit(factor=factor, prefix=prefix, dimension=dimension)
-            self._cache[key] = unit
-            return unit
-
-        return Quantity(other, self)
+        return Quantity(self.value / other, self.unit)
 
     @overload
-    def __rtruediv__[T: scalar](self, other: T) -> Quantity[T]: ...
+    def __rtruediv__(self, other: scalar) -> "Quantity[float]": ...
 
     @overload
-    def __rtruediv__(self, other: NDArray[Any]) -> Quantity[NDArray[Any]]: ...
+    def __rtruediv__(self, other: NDArray[Any]) -> "Quantity[NDArray[Any]]": ...
 
     @overload
-    def __rtruediv__(self, other: "Unit") -> "Unit": ...
+    def __rtruediv__[T_: scalar](self, other: "Quantity[T_]") -> "Quantity[T]": ...
+
+    @overload
+    def __rtruediv__(self, other: "Quantity[NDArray[Any]]") -> "Quantity[NDArray[Any]]": ...
+
+    @overload
+    def __rtruediv__(self, other: "Unit") -> "Quantity[T]": ...
 
     def __rtruediv__(self, other):
-        """Divide two units."""
-        return self.__truediv__(other)
+        if isinstance(other, Quantity):
+            return Quantity(other.value / self.value, other.unit / self.unit)
 
-    def __pow__(self, power: int_like) -> "Unit":
-        dim_vec = self.d.vec * power
-        dimension = find_dimension(dim_vec)
-        if dimension is None:
-            dim_name = f"{self.d.name}To{power}"
-            dimension = type(
-                dim_name,
-                (Dimension,),
-                {"name": dim_name, "vec": dim_vec, "si_symbol": f"{self.d.si_symbol}^{power}"},
-            )
+        if isinstance(other, Unit):
+            return Quantity(1 / self.value, other / self.unit)
 
-        factor = self.factor**power
-        prefix = self.prefix**power
-
-        key = (dim_vec.tobytes(), factor, prefix)
-        if key in self._cache:
-            return self._cache[key]
-
-        unit = Unit(factor=factor, prefix=prefix, dimension=dimension)
-        self._cache[key] = unit
-        return unit
+        return Quantity(other / self.value, Unit() / self.unit)

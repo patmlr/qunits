@@ -1,4 +1,4 @@
-import numpy as np
+_dimension_cache: dict[tuple[int, ...], type["Dimension"]] = {}
 
 
 class Dimension:
@@ -7,10 +7,11 @@ class Dimension:
     name: str
     si_symbol: str
 
-    vec: np.ndarray
+    vec: tuple[int, ...]
 
 
-# Base dimensions
+# Special dimensions for dimensionless quantities
+
 
 class Dimensionless(Dimension):
     """The dimension of dimensionless quantities."""
@@ -18,7 +19,13 @@ class Dimensionless(Dimension):
     name: str = "Dimensionless"
     si_symbol: str = ""
 
-    vec = np.zeros(7, dtype=int)
+    vec = (0, 0, 0, 0, 0, 0, 0)
+
+
+_dimension_cache.setdefault(Dimensionless.vec, Dimensionless)
+
+
+# Base dimensions
 
 
 class Time(Dimension):
@@ -27,7 +34,7 @@ class Time(Dimension):
     name: str = "Time"
     si_symbol: str = "s"
 
-    vec = np.array([1, 0, 0, 0, 0, 0, 0], dtype=int)
+    vec = (1, 0, 0, 0, 0, 0, 0)
 
 
 class Length(Dimension):
@@ -36,7 +43,7 @@ class Length(Dimension):
     name: str = "Length"
     si_symbol: str = "m"
 
-    vec = np.array([0, 1, 0, 0, 0, 0, 0], dtype=int)
+    vec = (0, 1, 0, 0, 0, 0, 0)
 
 
 class Mass(Dimension):
@@ -45,7 +52,7 @@ class Mass(Dimension):
     name: str = "Mass"
     si_symbol: str = "g"
 
-    vec = np.array([0, 0, 1, 0, 0, 0, 0], dtype=int)
+    vec = (0, 0, 1, 0, 0, 0, 0)
 
 
 class ElectricCurrent(Dimension):
@@ -54,7 +61,7 @@ class ElectricCurrent(Dimension):
     name: str = "ElectricCurrent"
     si_symbol: str = "A"
 
-    vec = np.array([0, 0, 0, 1, 0, 0, 0], dtype=int)
+    vec = (0, 0, 0, 1, 0, 0, 0)
 
 
 class Temperature(Dimension):
@@ -63,7 +70,7 @@ class Temperature(Dimension):
     name: str = "Temperature"
     si_symbol: str = "K"
 
-    vec = np.array([0, 0, 0, 0, 1, 0, 0], dtype=int)
+    vec = (0, 0, 0, 0, 1, 0, 0)
 
 
 class AmountOfSubstance(Dimension):
@@ -72,7 +79,7 @@ class AmountOfSubstance(Dimension):
     name: str = "AmountOfSubstance"
     si_symbol: str = "mol"
 
-    vec = np.array([0, 0, 0, 0, 0, 1, 0], dtype=int)
+    vec = (0, 0, 0, 0, 0, 1, 0)
 
 
 class LuminousIntensity(Dimension):
@@ -81,10 +88,17 @@ class LuminousIntensity(Dimension):
     name: str = "LuminousIntensity"
     si_symbol: str = "cd"
 
-    vec = np.array([0, 0, 0, 0, 0, 0, 1], dtype=int)
+    vec = (0, 0, 0, 0, 0, 0, 1)
+
+
+_base_dimensions = (Time, Length, Mass, ElectricCurrent, Temperature, AmountOfSubstance, LuminousIntensity)
+
+for _b in _base_dimensions:
+    _dimension_cache.setdefault(_b.vec, _b)
 
 
 # Composite dimensions
+
 
 class Velocity(Dimension):
     """The dimension of velocity."""
@@ -92,13 +106,42 @@ class Velocity(Dimension):
     name: str = "Velocity"
     si_symbol: str = "m/s"
 
-    vec = Length.vec - Time.vec
+    vec = tuple(l - t for l, t in zip(Length.vec, Time.vec))
 
 
-def find_dimension(dim_vec: np.ndarray) -> type[Dimension] | None:
-    """Find the dimension corresponding to a given dimension vector."""
-    for dim_cls in Dimension.__subclasses__():
-        if np.array_equal(dim_vec, dim_cls.vec):
-            return dim_cls
+_composite_dimensions = (Velocity,)
 
-    return None
+for _c in _composite_dimensions:
+    _dimension_cache.setdefault(_c.vec, _c)
+
+
+def add_dimension(vec: tuple[int, ...]) -> type["Dimension"]:
+    """Get a dimension class from a vector."""
+    dimension = _dimension_cache.get(vec)
+
+    if dimension is not None:
+        return dimension
+
+    n_positive = sum(1 for v in vec if v > 0)
+    n_negative = sum(1 for v in vec if v < 0)
+
+    name = ""
+    si_symbol = "1"
+    if n_positive:
+        name = "".join(f"{d.name}{v}" for v, d in zip(vec, _base_dimensions) if v > 0)
+        si_symbol = "*".join(f"{d.si_symbol}^{v}" for v, d in zip(vec, _base_dimensions) if v > 0)
+
+    if n_negative:
+        name_n = "".join(f"{d.name}{-v}" for v, d in zip(vec, _base_dimensions) if v < 0)
+        name += f"_Per_{name_n}"
+        si_symbol_n = "*".join(f"{d.si_symbol}^{-v}" for v, d in zip(vec, _base_dimensions) if v < 0)
+        si_symbol += f"/({si_symbol_n})" if n_negative > 1 else f"/{si_symbol_n}"
+
+    dimension = type(
+        name,
+        (Dimension,),
+        {"name": name, "vec": vec, "si_symbol": si_symbol},
+    )
+
+    _dimension_cache[vec] = dimension
+    return dimension
