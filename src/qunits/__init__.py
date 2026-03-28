@@ -1,7 +1,10 @@
-from qunits.si import si
-from qunits.dimension import (
-    AmountOfSubstance, ElectricCurrent, Mass, Time, Length, Temperature, LuminousIntensity
-)
-from qunits.unit import Quantity
+import qunits.dimension as dimension
+from qunits.u import u
+from qunits.unit import Quantity, Unit
 
-__all__ = ["si", "AmountOfSubstance", "ElectricCurrent", "Mass", "Time", "Length", "Temperature", "LuminousIntensity", "Quantity"]
+__all__ = [
+    "Quantity",
+    "Unit",
+    "dimension",
+    "u",
+]

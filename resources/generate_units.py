@@ -1,15 +1,18 @@
-from qunits.dimension import SYMBOL_FACTORS, SYMBOL_PREFIXES, SYMBOLS
+from config import SYMBOL_FACTORS, SYMBOL_PREFIXES, SYMBOLS
+
 from qunits.prefix import PREFIX_DICT
 
 
 def generate_units() -> None:
     """Generate units with prefixes."""
     dimensions = sorted(set(SYMBOLS.values()), key=lambda d: d.__name__)
-    with open("src/qunits/si.py", "w") as f:
+    with open("src/qunits/u.py", "w") as f:
         f.write("# Auto-generated units with prefixes\n\n")
-        f.write(f"from qunits.dimension import {', '.join(d.__name__ for d in dimensions)}\n")
+        f.write("import scipy.constants as sc\n\n")
+        f.write("from qunits.dimension import (\n")
+        f.write(f"    {',\n    '.join(d.__name__ for d in dimensions)},\n)\n")
         f.write("from qunits.unit import Unit\n\n\n")
-        f.write('class si:\n    """The SI unit system."""\n\n')
+        f.write('class u:\n    """The unit system."""\n\n')
 
         for symbol, dimension in SYMBOLS.items():
             for prefix_str, prefix_exp in PREFIX_DICT.items():
@@ -17,15 +20,16 @@ def generate_units() -> None:
                     continue
 
                 prefix = 10**prefix_exp
-                factor = SYMBOL_FACTORS[symbol]
-                scale = prefix * factor
+                factor = SYMBOL_FACTORS[symbol][0]
+
+                scale_str = f"{prefix:.1e} * {SYMBOL_FACTORS[symbol][1]}" if factor != 1.0 else f"{prefix:.1e}"
 
                 unit_name = f"{prefix_str}{symbol}"
                 unit_name = unit_name.replace("as", "attosecond")
 
                 f.write(
                     f"    {unit_name} = Unit("
-                    f'{scale:.1e}, {dimension.__name__}, symbol="{symbol}", prefix_exp={prefix_exp})\n'
+                    f'{scale_str}, {dimension.__name__}, symbol="{symbol}", prefix_exp={prefix_exp})\n'
                 )
 
 

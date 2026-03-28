@@ -1,16 +1,36 @@
 import numpy as np
 
-from qunits import si
+from qunits import u
 
-a = si.m * np.array([1.0])
-print(type(a), a.unit.d, a)
-b = si.mm * 2.0
-print(type(b), b.unit.d, b)
+a = u.m * np.array([1.0])
+print(a.unit.d, a)
+
+b = u.mm * 2.0
+print(b.unit.d, b)
+
 c = b + a
-print(type(c), c.unit.d, c)
-d = 3 * si.m / si.us
-print(type(d), d.unit.d, d)
-e = 4 / si.ms
-print(type(e), e.unit.d, e)
+print(c.unit.d, c)
+
+d = 3 * u.m / u.us
+print(d.unit.d, d)
+
+e = 4 / u.ms
+print(e.unit.d, e)
+
 f = d * e
-print(type(f), f.unit.d, f)
+print(f.unit.d, f)
+
+g = 5 * u.e
+print(g.unit.d, g)
+
+h = g * 2 * u.mV
+print(h.unit.d, h)
+
+i = h.si()
+print(i.unit.d, i)
+
+j = 9 * u.kg * 2 * u.m / u.s**2
+print(j.unit.d, j)
+
+k = g.to(u.uC)
+print(k.unit.d, k)

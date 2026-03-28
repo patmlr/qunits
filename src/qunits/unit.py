@@ -1,5 +1,5 @@
 import math
-from typing import Any, Protocol, TypeGuard, overload
+from typing import overload
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
@@ -11,36 +11,15 @@ from qunits.dimension import (
 )
 from qunits.prefix import PREFIX_DICT_EXP
 
+__all__ = ["Quantity", "Unit"]
+
+
 type int_like = int | np.integer
 type float_like = float | np.floating
 type scalar = int_like | float_like | NDArray[np.integer | np.floating]
 type array_like = ArrayLike
 
-
-class HasShape(Protocol):
-    @property
-    def shape(self) -> tuple[int, ...]: ...
-
-
-def has_shape(a: Any) -> TypeGuard[HasShape]:
-    r"""
-    Check if `a` has the `shape` property and `TypeGuard` it.
-
-    :param a: The object to check.
-    :returns: (has_shape) if `a` has the `shape` property.
-    """
-    return hasattr(a, "shape")
-
-
-def is_scalar(a: Any) -> TypeGuard[scalar]:
-    r"""
-    Check if `a` is a scalar object and `TypeGuard` it.
-
-    :param a: The object to check.
-    :returns: (is_scalar) if `a` is a `scalar`.
-    """
-    return hasattr(a, "__float__") and not (has_shape(a) and a.shape)
-
+UNIT_SYSTEMS = {"si"}
 
 _unit_cache: dict[tuple[tuple[int, ...], float], "Unit"] = {}
 
@@ -78,8 +57,10 @@ class Unit:
         self.scale = float(scale)
         self.dimension = dimension
 
-        self.symbol = symbol
-        self.prefix_exp = prefix_exp
+        if not hasattr(self, "symbol"):
+            self.symbol = symbol
+        if not hasattr(self, "prefix_exp"):
+            self.prefix_exp = prefix_exp
 
     @property
     def dim(self) -> type[Dimension]:
@@ -89,9 +70,43 @@ class Unit:
     def d(self) -> type[Dimension]:
         return self.dimension
 
-    def si(self) -> "Unit":
-        """Convert the unit to its SI equivalent."""
-        return Unit(self.scale, dimension=self.d, symbol=self.symbol)
+    def to(self, unit: "Unit | str") -> "Quantity":
+        """Convert the unit into a `Unit` in the target unit (system).
+
+        Args:
+            unit: The target unit as a `Unit` instance (e.g., `u.m`),
+                or the name of the target unit system (e.g., `"si"`).
+
+            Returns:
+                A `Quantity` instance representing the converted unit in the target unit (system).
+        """
+        if isinstance(unit, str):
+            if unit.lower() == "si":
+                return self.si()
+
+            raise ValueError(
+                f"Unknown unit system: {unit}. Please use one of {UNIT_SYSTEMS},"
+                f" or a valid `Unit` instance, such as `u.m`."
+            )
+
+        if isinstance(unit, Unit):
+            dim_vec = tuple(a - b for a, b in zip(unit.d.vec, self.d.vec))
+            if any(dim_vec):
+                raise ValueError("Dimension mismatch")
+
+            return Quantity(self.scale / unit.scale, unit)
+
+        raise TypeError(
+            f"Invalid type of `unit`: {type(unit)}. Please use a `str` from the available unit systems {UNIT_SYSTEMS},"
+            f" or a valid `Unit` instance, such as `u.m`."
+        )
+
+    def si(self) -> "Quantity":
+        """Convert the unit into a `Quantity` in SI units."""
+        if self.scale == 1.0:
+            return Quantity(1.0, self)
+
+        return Quantity(self.scale, Unit(1.0, dimension=self.d, symbol=self.d.si_symbol, prefix_exp=0))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.scale:.1e}, {self.d.name})"
@@ -211,6 +226,24 @@ class Quantity:
         if unit is None:
             unit = Unit()
         self.unit = unit
+
+    def to(self, unit: "Unit | str") -> "Quantity":
+        """Convert the quantity into a `Quantity` in the target unit (system).
+
+        Args:
+            unit: The target unit as a `Unit` instance (e.g., `u.m`),
+                or the name of the target unit system (e.g., `"si"`).
+
+        Returns:
+            A `Quantity` instance representing the converted quantity in the target unit (system).
+        """
+        q = self.unit.to(unit)
+        return Quantity(self.value * q.value, q.unit)
+
+    def si(self) -> "Quantity":
+        """Convert the unit into a `Quantity` in SI units."""
+        q = self.unit.si()
+        return Quantity(self.value * q.value, q.unit)
 
     def __repr__(self) -> str:
         return f"{self.value} {self.unit}"

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qunits"
-version = "0.0.1"
+version = "0.1.0"
 description = "A verbose, performant and generic physical unit system"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -24,7 +24,10 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Scientific/Engineering :: Physics",
 ]
-dependencies = []
+dependencies = [
+    "numpy >= 2.0.2",
+    "scipy >= 1.17.1",
+]
 
 [project.urls]
 # homepage = "https://patmlr.github.io/qunits/"
@@ -44,7 +47,6 @@ include = ["qunits", "qunits.*"]
 extend-exclude = [
     "__pycache__",
     "docs/*",
-    "__init__.py",
 ]
 line-length = 120
 target-version = "py312"

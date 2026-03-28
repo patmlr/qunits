@@ -106,7 +106,7 @@ for _b in _base_dimensions:
     _dimension_cache.setdefault(_b.vec, _b)
 
 
-# Reciprocal dimensions
+# Composite dimensions
 
 
 class Frequency(Dimension):
@@ -117,9 +117,6 @@ class Frequency(Dimension):
     prefixed = True
 
     vec = tuple(-t for t in Time.vec)
-
-
-# Composite dimensions
 
 
 class Area(Dimension):
@@ -179,7 +176,7 @@ class Force(Dimension):
     si_symbol: str = "N"
     prefixed = True
 
-    vec = tuple(m + l - 2 * t for m, l, t in zip(Mass.vec, Length.vec, Time.vec))
+    vec = tuple(m + a for m, a in zip(Mass.vec, Acceleration.vec))
 
 
 class Pressure(Dimension):
@@ -192,6 +189,36 @@ class Pressure(Dimension):
     vec = tuple(f - a for f, a in zip(Force.vec, Area.vec))
 
 
+class Energy(Dimension):
+    """The dimension of energy."""
+
+    name: str = "Energy"
+    si_symbol: str = "J"
+    prefixed = True
+
+    vec = tuple(f + l for f, l in zip(Force.vec, Length.vec))
+
+
+class Power(Dimension):
+    """The dimension of power."""
+
+    name: str = "Power"
+    si_symbol: str = "W"
+    prefixed = True
+
+    vec = tuple(e - t for e, t in zip(Energy.vec, Time.vec))
+
+
+class Action(Dimension):
+    """The dimension of action."""
+
+    name: str = "Action"
+    si_symbol: str = "J*s"
+    prefixed = False
+
+    vec = tuple(e + t for e, t in zip(Energy.vec, Time.vec))
+
+
 class Charge(Dimension):
     """The dimension of electric charge."""
 
@@ -200,6 +227,46 @@ class Charge(Dimension):
     prefixed = True
 
     vec = tuple(i + t for i, t in zip(ElectricCurrent.vec, Time.vec))
+
+
+class Voltage(Dimension):
+    """The dimension of electric potential difference."""
+
+    name: str = "Voltage"
+    si_symbol: str = "V"
+    prefixed = True
+
+    vec = tuple(e - q for e, q in zip(Energy.vec, Charge.vec))
+
+
+class Capacitance(Dimension):
+    """The dimension of capacitance."""
+
+    name: str = "Capacitance"
+    si_symbol: str = "F"
+    prefixed = True
+
+    vec = tuple(q - v for q, v in zip(Charge.vec, Voltage.vec))
+
+
+class Resistance(Dimension):
+    """The dimension of electric resistance."""
+
+    name: str = "Resistance"
+    si_symbol: str = "Ohm"
+    prefixed = True
+
+    vec = tuple(v - i for v, i in zip(Voltage.vec, ElectricCurrent.vec))
+
+
+class ElectricField(Dimension):
+    """The dimension of electric field."""
+
+    name: str = "ElectricField"
+    si_symbol: str = "V/m"
+    prefixed = False
+
+    vec = tuple(v - l for v, l in zip(Voltage.vec, Length.vec))
 
 
 class MagneticInduction(Dimension):
@@ -221,64 +288,19 @@ _composite_dimensions = (
     Jerk,
     Force,
     Pressure,
+    Energy,
+    Power,
+    Action,
     Charge,
+    Voltage,
+    Capacitance,
+    Resistance,
+    ElectricField,
     MagneticInduction,
 )
 
 for _c in _composite_dimensions:
     _dimension_cache.setdefault(_c.vec, _c)
-
-
-SYMBOLS = {
-    "m": Length,
-    "g": Mass,
-    "u": Mass,
-    "s": Time,
-    "A": ElectricCurrent,
-    "K": Temperature,
-    "mol": AmountOfSubstance,
-    "cd": LuminousIntensity,
-    "Hz": Frequency,
-    "N": Force,
-    "Pa": Pressure,
-    "C": Charge,
-    "T": MagneticInduction,
-    "G": MagneticInduction,
-}
-
-SYMBOL_FACTORS: dict[str, float] = {
-    "m": 1.0,
-    "g": 1.0,
-    "u": 1.66053906892e-24,
-    "s": 1.0,
-    "A": 1.0,
-    "K": 1.0,
-    "mol": 1.0,
-    "cd": 1.0,
-    "Hz": 1.0,
-    "N": 1.0,
-    "Pa": 1.0,
-    "C": 1.0,
-    "T": 1.0,
-    "G": 1e-4,
-}
-
-SYMBOL_PREFIXES: dict[str, tuple[int, int]] = {
-    "m": (-30, 3),
-    "g": (-15, 3),
-    "u": (0, 0),
-    "s": (-30, 0),
-    "A": (-15, 6),
-    "K": (-15, 0),
-    "mol": (-15, 3),
-    "cd": (-15, 9),
-    "Hz": (-15, 30),
-    "N": (-15, 15),
-    "Pa": (-15, 15),
-    "C": (-15, 9),
-    "T": (-15, 15),
-    "G": (-12, 18),
-}
 
 
 def add_dimension(vec: tuple[int, ...]) -> type["Dimension"]:
@@ -315,3 +337,10 @@ def add_dimension(vec: tuple[int, ...]) -> type["Dimension"]:
 
     _dimension_cache[vec] = dimension
     return dimension
+
+
+if __name__ == "__main__":
+    for dim in _dimension_cache.values():
+        assert add_dimension(dim.vec) is dim
+
+    print(f"dimension cache size: {len(_dimension_cache)}")
