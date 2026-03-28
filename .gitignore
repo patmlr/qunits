@@ -10,3 +10,6 @@ __pycache__
 /dist/
 /wheelhouse/
 *.egg-info/
+
+/docs/_site/
+/docs/.jekyll-metadata

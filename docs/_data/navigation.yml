@@ -1,0 +1,9 @@
+- name: Install
+  link: /install.html
+  identifier: /install
+- name: Tutorials
+  link: /tutorials/tutorials.html
+  identifier: /tutorials
+- name: API Doc
+  link: /doc/doc.html
+  identifier: /doc

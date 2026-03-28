@@ -1,0 +1,4 @@
+- name: start
+  link: /tutorials/start.html
+  title: Getting started
+  identifier: /start

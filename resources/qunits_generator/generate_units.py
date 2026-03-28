@@ -1,3 +1,5 @@
+import os
+
 from config import SYMBOL_FACTORS, SYMBOL_PREFIXES, SYMBOLS
 
 from qunits.prefix import PREFIX_DICT
@@ -5,8 +7,9 @@ from qunits.prefix import PREFIX_DICT
 
 def generate_units() -> None:
     """Generate units with prefixes."""
+    path = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "src", "qunits", "u.py")
     dimensions = sorted(set(SYMBOLS.values()), key=lambda d: d.__name__)
-    with open("src/qunits/u.py", "w") as f:
+    with open(path, "w") as f:
         f.write("# Auto-generated units with prefixes\n\n")
         f.write("import scipy.constants as sc\n\n")
         f.write("from qunits.dimension import (\n")

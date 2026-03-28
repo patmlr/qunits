@@ -1,0 +1,8 @@
+title: qunits
+logo: /assets/img/logo.svg
+description: A performant, verbose and generic physical unit system.
+show_downloads: true
+theme: jekyll-theme-minimal
+exclude:
+  - /doc/doc.py
+  - /tutorials/tutorials.py

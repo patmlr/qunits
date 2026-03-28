@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qunits"
-version = "0.1.0"
-description = "A verbose, performant and generic physical unit system"
+version = "0.2.0"
+description = "A performant, verbose and generic physical unit system."
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
@@ -30,8 +30,8 @@ dependencies = [
 ]
 
 [project.urls]
-# homepage = "https://patmlr.github.io/qunits/"
-# documentation = "https://patmlr.github.io/qunits/doc/doc.html"
+homepage = "https://patmlr.github.io/qunits/"
+documentation = "https://patmlr.github.io/qunits/doc/doc.html"
 download = "https://pypi.org/project/qunits/#files"
 source = "https://github.com/patmlr/qunits"
 tracker = "https://github.com/patmlr/qunits/issues"
