@@ -332,7 +332,12 @@ for _c in _composite_dimensions:
 
 
 def add_dimension(vec: tuple[int, ...]) -> type["Dimension"]:
-    """Get a dimension class from a vector."""
+    """Get a dimension class from a dimension vector.
+
+    :param vec: The dimension vector.
+
+    :returns: The dimension class.
+    """
     dimension = _dimension_cache.get(vec)
 
     if dimension is not None:

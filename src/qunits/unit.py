@@ -48,11 +48,15 @@ class Unit:
     ) -> None:
         """The base class for units.
 
-        Args:
-            scale: The scale by which the unit is multiplied (e.g., 1 for Tesla, 1e-4 for Gauss).
-            dimension: The dimension of the unit (e.g., Length, Mass, Time).
-            symbol: The symbol of the unit (e.g., "m" for meter, "s" for second).
-            prefix_exp: The exponent of the prefix (e.g., -3 for milli, 3 for kilo).
+        Creating a new unit with the same `dimension` and `scale` of an existing unit
+        will return the cached instance.
+        The `symbol` and `prefix_exp` attributes are only used for string representation
+        and are set to the first created unit.
+
+        :param scale: The scale by which the unit is multiplied (e.g., `1.0` for Tesla, `1e-4` for Gauss).
+        :param dimension: The dimension of the unit (e.g., `Length`, `Mass`, `Time`).
+        :param symbol: The symbol of the unit (e.g., `"m"` for meter, `"s"` for second).
+        :param prefix_exp: The exponent of the prefix (e.g., `-3` for milli, `3` for kilo).
         """
         self.scale = float(scale)
         self.dimension = dimension
@@ -71,14 +75,12 @@ class Unit:
         return self.dimension
 
     def to(self, unit: "Unit | str") -> "Quantity":
-        """Convert the unit into a `Unit` in the target unit (system).
+        """Convert the unit into a `Quantity` in the target `Unit` (system).
 
-        Args:
-            unit: The target unit as a `Unit` instance (e.g., `u.m`),
-                or the name of the target unit system (e.g., `"si"`).
+        :param unit: The target unit as a `Unit` instance (e.g., `u.m`),
+            or the name of the target unit system (e.g., `"si"`). Available unit systems: `{"si"}`.
 
-            Returns:
-                A `Quantity` instance representing the converted unit in the target unit (system).
+        :returns: (quantity) The unit converted into the target `Unit` (system).
         """
         if isinstance(unit, str):
             if unit.lower() == "si":
@@ -102,14 +104,17 @@ class Unit:
         )
 
     def si(self) -> "Quantity":
-        """Convert the unit into a `Quantity` in SI units."""
+        """Convert the unit into a `Quantity` in SI units.
+
+        :returns: (quantity) The unit in SI units.
+        """
         if self.scale == 1.0:
             return Quantity(1.0, self)
 
         return Quantity(self.scale, Unit(1.0, dimension=self.d, symbol=self.d.si_symbol, prefix_exp=0))
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.scale:.1e}, {self.d.name})"
+        return f"{self.__class__.__name__}({self.scale:e}, {self.d.name})"
 
     def __str__(self) -> str:
         if self.d.prefixed:
@@ -154,8 +159,12 @@ class Unit:
             dim_vec = tuple(a + b for a, b in zip(self.d.vec, other.d.vec))
             dimension = add_dimension(dim_vec)
 
+            prefix_exp = None
+            if self.prefix_exp is not None and other.prefix_exp is not None:
+                prefix_exp = self.prefix_exp + other.prefix_exp
+
             scale = self.scale * other.scale
-            return Unit(scale=scale, dimension=dimension)
+            return Unit(scale=scale, dimension=dimension, prefix_exp=prefix_exp)
 
         return Quantity(other, self)
 
@@ -180,8 +189,12 @@ class Unit:
             dim_vec = tuple(a - b for a, b in zip(self.d.vec, other.d.vec))
             dimension = add_dimension(dim_vec)
 
+            prefix_exp = None
+            if self.prefix_exp is not None and other.prefix_exp is not None:
+                prefix_exp = self.prefix_exp - other.prefix_exp
+
             scale = self.scale / other.scale
-            return Unit(scale=scale, dimension=dimension)
+            return Unit(scale=scale, dimension=dimension, prefix_exp=prefix_exp)
 
         return Quantity(other, self)
 
@@ -199,15 +212,23 @@ class Unit:
         dim_vec = tuple(-x for x in self.d.vec)
         dimension = add_dimension(dim_vec)
 
-        unit = Unit(scale=1 / self.scale, dimension=dimension)
+        prefix_exp = None
+        if self.prefix_exp is not None:
+            prefix_exp = -self.prefix_exp
+
+        unit = Unit(scale=1 / self.scale, dimension=dimension, prefix_exp=prefix_exp)
         return Quantity(other, unit)
 
     def __pow__(self, power: int_like) -> "Unit":
         dim_vec = tuple(x * power for x in self.d.vec)
         dimension = add_dimension(dim_vec)
 
+        prefix_exp = None
+        if self.prefix_exp is not None:
+            prefix_exp = self.prefix_exp * power
+
         scale = self.scale**power
-        return Unit(scale=scale, dimension=dimension)
+        return Unit(scale=scale, dimension=dimension, prefix_exp=prefix_exp)
 
 
 class Quantity:
@@ -216,11 +237,18 @@ class Quantity:
     __array_priority__ = 1000
 
     def __init__(self, value: array_like, unit: "Unit | None" = None) -> None:
-        """Initialize a quantity with a value and a unit.
+        """The base class for quantities.
 
-        Args:
-            value: The value of the quantity.
-            unit: The unit of the quantity.
+        - Multiplying or dividing an `array_like` with a `Unit` will return a `Quantity`.
+        - Multiplying or dividing a `Quantity` by a `Unit` will return a new `Quantity`
+         with the same value and the combined unit.
+        - Multiplying or dividing two `Quantity` instances will return a new `Quantity`
+         with the combined value and the combined unit.
+        - Multiplying or dividing a `Quantity` by an `array_like` will return a new `Quantity`
+        with the scaled value and the same unit.
+
+        :param value: The value of the quantity.
+        :param unit: The unit of the quantity.
         """
         self.value = np.asarray(value, dtype=np.float64)
         if unit is None:
@@ -228,20 +256,21 @@ class Quantity:
         self.unit = unit
 
     def to(self, unit: "Unit | str") -> "Quantity":
-        """Convert the quantity into a `Quantity` in the target unit (system).
+        """Convert the quantity into a `Quantity` in the target `Unit` (system).
 
-        Args:
-            unit: The target unit as a `Unit` instance (e.g., `u.m`),
-                or the name of the target unit system (e.g., `"si"`).
+        :param unit: The target unit as a `Unit` instance (e.g., `u.m`),
+            or the name of the target unit system (e.g., `"si"`). Available unit systems: `{"si"}`.
 
-        Returns:
-            A `Quantity` instance representing the converted quantity in the target unit (system).
+        :returns: (quantity) The quantity converted into the target `Unit` (system).
         """
         q = self.unit.to(unit)
         return Quantity(self.value * q.value, q.unit)
 
     def si(self) -> "Quantity":
-        """Convert the unit into a `Quantity` in SI units."""
+        """Convert the quantity into a `Quantity` in SI units.
+
+        :returns: (quantity) The quantity converted into SI units.
+        """
         q = self.unit.si()
         return Quantity(self.value * q.value, q.unit)
 
@@ -249,6 +278,9 @@ class Quantity:
         return f"{self.value} {self.unit}"
 
     def __str__(self) -> str:
+        if "Unit" in str(self.unit):
+            return f"{self.value * self.unit.scale} {self.unit.si().unit}"
+
         return f"{self.value} {self.unit}"
 
     def __add__(self, other: "array_like | Quantity") -> "Quantity":

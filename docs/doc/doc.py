@@ -2,7 +2,7 @@ import importlib
 import os
 import inspect
 from docutils.core import publish_parts
-from qunits import u, Unit, Quantity, dimension
+from qunits import Unit
 from numpy import ndarray
 from numpy.typing import ArrayLike as array_like
 
@@ -19,8 +19,7 @@ MODULE_INCLUDE = {
         }
     }
 FOLDER_FILES = set()
-FILES = sorted(["dimension", "unit", "u"])
-# FILES = sorted(["qtypes"])
+FILES = sorted(["dimension", "registry", "unit"])
 
 
 def is_num(val):
@@ -207,9 +206,21 @@ def gen_doc():
         html_file.write(html)
 
 
-def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc):
+def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str]):
     j = namespace.rfind(".")
+
     class_flag = 1 if f[0].isupper() else 2 if namespace[j + 1 :][0].isupper() else 0
+    type_flag = "See help(type(self)) for accurate signature" in func_doc[f] and class_flag == 1
+
+    if f == "u":
+        class_flag = 1
+        type_flag = True
+
+    if type_flag:
+        func_doc[f] = funcs[f].__doc__
+
+    class_funcs = [m for m in inspect.getmembers(funcs[f], inspect.isfunction) if not m[0].startswith("_")]
+    class_attr = [m for m in inspect.getmembers(funcs[f]) if not m[0].startswith("_") and m not in class_funcs]
 
     i = temp.index("<!--p>sig</p-->")
     html = "\n".join(temp[:i])
@@ -255,7 +266,7 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc):
             if callable(default):
                 default = default.__name__
             if isinstance(default, str):
-                default = f"'{default}'"
+                default = f'"{default}"'
 
             color_class = ""
             if isinstance(default, bool):
@@ -285,11 +296,12 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc):
         "_file_", file_py
     ).replace("_start_", str(i_start)).replace("_stop_", str(i_stop))
 
+    if type_flag:
+        html = html.replace('<span class="sig-paren">&nbsp;(&nbsp;</span><span class="sig-paren">&nbsp;)</span>', "")
+
     # Description
     i = temp.index("<!--p>desc</p-->") + 1
     desc = func_doc[f]
-    if f == "LorentzQI":
-        print()
     if desc is None:
         desc = ""
     else:
@@ -298,10 +310,48 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc):
             j = desc.find(":return")
             if j == -1:
                 j = desc.find(":raise")
+        if j == -1:
+            j = len(desc)
         desc = desc[:j].strip().strip("\n")
     html += "\n" + temp[i].replace("_description_", docstring_to_html(desc))
 
     html += "\n" + temp[i + 1]
+
+    unit_html = (
+        '<span class="default_value"><span class="pre_colorclass_">Unit</span></span><span>(</span>'
+        '<span class="default_value"><span class="pre_colorscale_">_scale_</span></span>, '
+        '<span class="default_value"><span class="pre_colordimension_">_dimension_</span></span>'
+        '<span>)</span>'
+    )
+
+    # Attributes
+    if class_flag == 1 and type_flag:
+        i = temp.index("<!--p>attr-h</p-->") + 1
+        html += "\n" + temp[i]
+        html += "\n" + "\n".join(temp[i + 3 : i + 5])
+
+        for a, a_value in class_attr:
+            if isinstance(a_value, Unit):
+                a_str = unit_html.replace("_colorscale_", " num").replace("_colordimension_", " class").replace("_scale_", f"{a_value.scale:e}").replace("_dimension_", a_value.d.name)
+            else:
+                if isinstance(a_value, str):
+                    a_value = f'"{a_value}"'
+                a_str = f'<span class="default_value"><span class="pre_colorclass_">{str(a_value)}</span></span>'
+
+            color_class = ""
+            if isinstance(a_value, bool):
+                color_class = " bool"
+            elif isinstance(a_value, str):
+                color_class = " string"
+            elif is_num(a_value) or isinstance(a_value, tuple):
+                color_class = " num"
+            elif isinstance(a_value, object):
+                color_class = " class"
+
+            a_str = a_str.replace("_colorclass_", color_class)
+
+            html += "\n" + temp[i + 5].replace("_attr_", a).replace("_attr-value_", a_str)
+        html += "\n".join(temp[i + 6 : i + 8])
 
     # Parameters
     if len([k for k in func_sig[f].parameters.keys() if k != "self"]):
@@ -446,7 +496,7 @@ def gen_functions():
 
         namespace = f"qunits{f'.{file}' if file in FOLDER_FILES else ''}"
         mod = importlib.import_module(f"qunits.{file}")
-        func_str = sorted(
+        func_str: list[str] = sorted(
             f for f in mod.__all__ if callable(eval(f"mod.{f}", {"mod": mod})) and include_func(file, f)
         )
         funcs = {f: eval(f"mod.{f}") for f in func_str}

@@ -626,6 +626,10 @@ em.sig-param { display: flex; }
     color: var(--py-num-color);
     }
 
+.default_value span.class {
+    color: var(--py-class-color);
+    }
+
 span.sig-prename { background-color: transparent; font-weight: bold; }
 span.sig-classname {color: var(--py-class-color); background-color: transparent; font-weight: bold; font-size: 1.2em; }
 span.sig-name { color: var(--py-func-color); background-color: transparent; font-weight: bold; font-size: 1.2em; }

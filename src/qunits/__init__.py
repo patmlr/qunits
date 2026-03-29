@@ -1,5 +1,5 @@
 import qunits.dimension as dimension
-from qunits.u import u
+from qunits.registry import u
 from qunits.unit import Quantity, Unit
 
 __all__ = [

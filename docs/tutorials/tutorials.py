@@ -13,7 +13,11 @@ STYLE = "tango"
 def example_0():
     from qunits import u
 
-    B = 0.42 * u.T  # >>> 0.42 T
+    q = 2 * u.e  # >>> 2.0 e
+    v = 2e5 * u.m / u.s  # >>> 200000.0 m/s
+    B = 0.42 * u.mT  # >>> 0.42 mT
+
+    F = q * v * B  # >>> 2.69165674512e-17 N
 
 
 def example_1():
@@ -22,19 +26,11 @@ def example_1():
 
     s = 8 * u.m
     dt = 2 * u.ms
-    v = s / dt
+    v = s / dt  # >>> 4000.0 m/s
 
-    print(v.unit.d, v)
-    # 4.0e3 m/s
+    a = v / (2 * u.s)  # >>> 2000.0 m/s^2
 
-    a = v / (2 * u.s)
-
-    print(a.unit.d, a)
-    # 4.0e3 m/s^2
-
-    f = 200 * u.kg * a
-    print(f.unit.d, f)
-    # 8.0e5 N
+    f = 200 * u.kg * a  # >>> 400.0 kN
 
 
 
@@ -63,5 +59,5 @@ def gen_example(n):
 
 if __name__ == "__main__":
     # gen_pycode_css()
-    gen_example(1)
-    example_1()
+    gen_example(0)
+    example_0()

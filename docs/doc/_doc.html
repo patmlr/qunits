@@ -2,27 +2,40 @@
 <article class="bd-article code-prose">
 <h1>API Doc</h1>
 
-<h2>qunits’s module structure</h2>
+<h2>Modules</h2>
 
-<p>Currently, there are seven modules in qunits, divided by their purpose.</p>
-
-<ul>
-<li><a href="{{ '/doc/modules/dimension.html' | relative_url }}"><em>dimension</em></a> &emsp; Angular momentum algebra and transition matrix elements.</li>
-<li><a href="{{ '/doc/modules/unit.html' | relative_url }}"><em>unit</em></a> &emsp; Angular momentum algebra and transition matrix elements.</li>
-</ul>
-
-<h2>qunits’s namespaces</h2>
-
-<p>For the ease of access of most of the functions implemented in qunits,
-the seven modules are summarized in only three namespaces,</p>
+<p><code>qunits</code> is split into three submodules.</p>
 
 <ul>
-<li><code>qunits</code></li>
-<li><code>qunits.models</code></li>
-<li><code>qunits.simulate</code></li>
+<li><a href="{{ '/doc/modules/dimension.html' | relative_url }}"><em>dimension</em></a> &emsp; Contains the dimension definitions.</li>
+<li><a href="{{ '/doc/modules/registry.html' | relative_url }}"><em>registry</em></a> &emsp; Contains the unit registry <code>u</code>.</li>
+<li><a href="{{ '/doc/modules/unit.html' | relative_url }}"><em>unit</em></a> &emsp; Contains the <code>Unit</code> and the <code>Quantity</code> classes.</li>
 </ul>
 
-<p>which allows most of the functions to be accessed by simply importing qunits.</p>
+<p>All features can be accessed with the following imports.</p>
+
+<div class="py-source"><pre>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qunits</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">u</span>
+</pre></div>
+
+<h2>Registry</h2>
+<p>
+The unit registry <a href="{{ '/doc/functions/registry/u.html' | relative_url }}"><code>u</code></a> contains many predefined units,
+including prefixes, such as <i>kilo</i> and <i>milli</i>. Depending on the unit, the prefixes extend from $10^{-30}$ to $10^{30}$.
+</p>
+
+<h2>Units</h2>
+
+<p>
+Physical units are defined by the <a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}"><code>Unit</code></a> class.
+</p>
+
+<h2>Quantities</h2>
+
+<p>
+Numerical objects with physical units are defined by the <a href="{{ '/doc/functions/unit/Quantity/Quantity.html' | relative_url }}"><code>Quantity</code></a> class.
+</p>
+
 </article>
 </div>
 

@@ -1,0 +1,277 @@
+---
+layout: default
+title: API Doc
+---
+<div class="bd-content-main">
+<article class="bd-article code-prose">
+<h1>API Doc</h1>
+
+<h2>Modules</h2>
+
+<p><code>qunits</code> is split into three submodules.</p>
+
+<ul>
+<li><a href="{{ '/doc/modules/dimension.html' | relative_url }}"><em>dimension</em></a> &emsp; Contains the dimension definitions.</li>
+<li><a href="{{ '/doc/modules/registry.html' | relative_url }}"><em>registry</em></a> &emsp; Contains the unit registry <code>u</code>.</li>
+<li><a href="{{ '/doc/modules/unit.html' | relative_url }}"><em>unit</em></a> &emsp; Contains the <code>Unit</code> and the <code>Quantity</code> classes.</li>
+</ul>
+
+<p>All features can be accessed with the following imports.</p>
+
+<div class="py-source"><pre>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qunits</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">u</span>
+</pre></div>
+
+<h2>Registry</h2>
+<p>
+The unit registry <a href="{{ '/doc/functions/registry/u.html' | relative_url }}"><code>u</code></a> contains many predefined units,
+including prefixes, such as <i>kilo</i> and <i>milli</i>. Depending on the unit, the prefixes extend from $10^{-30}$ to $10^{30}$.
+</p>
+
+<h2>Units</h2>
+
+<p>
+Physical units are defined by the <a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}"><code>Unit</code></a> class.
+</p>
+
+<h2>Quantities</h2>
+
+<p>
+Numerical objects with physical units are defined by the <a href="{{ '/doc/functions/unit/Quantity/Quantity.html' | relative_url }}"><code>Quantity</code></a> class.
+</p>
+
+</article>
+</div>
+
+<div class="bd-content-table">
+<div class="bd-content-table-container">
+<a href="{{ '/doc/doc.html' | relative_url }}">
+<div class="bd-content-table-header row">
+<div class="table-column1"><img src="{{ '/assets/img/list-unordered.svg' | relative_url }}"/></div>
+<div class="column2"><h3 style="margin: auto auto auto 0; "><strong>API navigation</strong></h3></div>
+</div>
+</a>
+<div class="bd-content-table-content">
+<ul class="extern"><li class="has-children">
+<a href="{{ '/doc/modules/dimension.html' | relative_url }}">qunits.dimension</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Acceleration/Acceleration.html' | relative_url }}">qunits.Acceleration</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Action/Action.html' | relative_url }}">qunits.Action</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/AmountOfSubstance/AmountOfSubstance.html' | relative_url }}">qunits.AmountOfSubstance</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Area/Area.html' | relative_url }}">qunits.Area</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Capacitance/Capacitance.html' | relative_url }}">qunits.Capacitance</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Charge/Charge.html' | relative_url }}">qunits.Charge</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Dimensionless/Dimensionless.html' | relative_url }}">qunits.Dimensionless</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/ElectricCurrent/ElectricCurrent.html' | relative_url }}">qunits.ElectricCurrent</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/ElectricField/ElectricField.html' | relative_url }}">qunits.ElectricField</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Energy/Energy.html' | relative_url }}">qunits.Energy</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Force/Force.html' | relative_url }}">qunits.Force</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Frequency/Frequency.html' | relative_url }}">qunits.Frequency</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Jerk/Jerk.html' | relative_url }}">qunits.Jerk</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Length/Length.html' | relative_url }}">qunits.Length</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/LuminousIntensity/LuminousIntensity.html' | relative_url }}">qunits.LuminousIntensity</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/MagneticInduction/MagneticInduction.html' | relative_url }}">qunits.MagneticInduction</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Mass/Mass.html' | relative_url }}">qunits.Mass</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Power/Power.html' | relative_url }}">qunits.Power</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Pressure/Pressure.html' | relative_url }}">qunits.Pressure</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Resistance/Resistance.html' | relative_url }}">qunits.Resistance</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Temperature/Temperature.html' | relative_url }}">qunits.Temperature</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Time/Time.html' | relative_url }}">qunits.Time</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Velocity/Velocity.html' | relative_url }}">qunits.Velocity</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Voltage/Voltage.html' | relative_url }}">qunits.Voltage</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Volume/Volume.html' | relative_url }}">qunits.Volume</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li></ul>
+</details>
+</li><li class="has-children">
+<a href="{{ '/doc/modules/registry.html' | relative_url }}">qunits.registry</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a">
+<li class="spaced"><a href="{{ '/doc/functions/registry/u.html' | relative_url }}">qunits.u</a></li></ul>
+</details>
+</li><li class="has-children">
+<a href="{{ '/doc/modules/unit.html' | relative_url }}">qunits.unit</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/unit/Quantity/Quantity.html' | relative_url }}">qunits.Quantity</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a">
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/si.html' | relative_url }}">qunits.Quantity.si</a></li>
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to.html' | relative_url }}">qunits.Quantity.to</a></li></ul>
+</details>
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}">qunits.Unit</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a">
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Unit/si.html' | relative_url }}">qunits.Unit.si</a></li>
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Unit/to.html' | relative_url }}">qunits.Unit.to</a></li></ul>
+</details>
+</li></ul>
+</details>
+</li>
+</ul>
+</div>
+</div>
+</div>
