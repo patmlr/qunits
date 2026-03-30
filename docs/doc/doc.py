@@ -320,7 +320,7 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
     unit_html = (
         '<span class="default_value"><span class="pre_colorclass_">Unit</span></span><span>(</span>'
         '<span class="default_value"><span class="pre_colorscale_">_scale_</span></span>, '
-        '<span class="default_value"><span class="pre_colordimension_">_dimension_</span></span>'
+        '<span class="default_value"><span class="pre_colordimension_">_dimension_</span></span>_context_'
         '<span>)</span>'
     )
 
@@ -332,7 +332,7 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
 
         for a, a_value in class_attr:
             if isinstance(a_value, Unit):
-                a_str = unit_html.replace("_colorscale_", " num").replace("_colordimension_", " class").replace("_scale_", f"{a_value.scale:e}").replace("_dimension_", a_value.d.name)
+                a_str = unit_html.replace("_colorscale_", " num").replace("_colordimension_", " class").replace("_scale_", f"{a_value.scale:e}").replace("_dimension_", a_value.d.name).replace("_context_", f', <span class="default_value"><span class="pre string">"{a_value.context}"</span></span>' if a_value.context else "")
             else:
                 if isinstance(a_value, str):
                     a_value = f'"{a_value}"'

@@ -5,6 +5,7 @@
 !.vscode/settings.json
 !.vscode/launch.json
 __pycache__
+__pintcache__
 
 /build/
 /dist/

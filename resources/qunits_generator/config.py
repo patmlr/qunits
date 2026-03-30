@@ -1,3 +1,5 @@
+from math import pi
+
 import scipy.constants as sc
 
 from qunits.dimension import (
@@ -5,6 +7,7 @@ from qunits.dimension import (
     AmountOfSubstance,
     Capacitance,
     Charge,
+    Dimensionless,
     ElectricCurrent,
     Energy,
     Force,
@@ -23,6 +26,9 @@ from qunits.dimension import (
 )
 
 SYMBOLS = {
+    "percent": Dimensionless,
+    "rad": Dimensionless,
+    "pi": Dimensionless,
     "m": Length,
     "g": Mass,
     "u": Mass,
@@ -49,6 +55,9 @@ SYMBOLS = {
 }
 
 SYMBOL_FACTORS: dict[str, tuple[float, str]] = {
+    "percent": (1e-2, "1e-2"),
+    "rad": (1.0, "1.0"),
+    "pi": (pi, "pi"),
     "m": (1.0, "1.0"),
     "g": (1e-3, "1e-3"),
     "u": (sc.u * 1e3, "sc.u * 1e3"),
@@ -74,7 +83,15 @@ SYMBOL_FACTORS: dict[str, tuple[float, str]] = {
     "G": (1e-4, "1e-4"),
 }
 
+SYMBOL_CONTEXTS: dict[str, str] = {
+    "rad": "angle",
+    "pi": "angle",
+}
+
 SYMBOL_PREFIXES: dict[str, tuple[int, int]] = {
+    "percent": (0, 0),
+    "rad": (-9, 0),
+    "pi": (0, 0),
     "m": (-30, 3),
     "g": (-15, 3),
     "u": (0, 0),

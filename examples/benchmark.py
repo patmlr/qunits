@@ -1,3 +1,4 @@
+import os
 import time
 
 import numpy as np
@@ -7,15 +8,15 @@ from qunits import Quantity, u
 from qunits.dimension import _dimension_cache
 from qunits.unit import _unit_cache
 
-up = UnitRegistry()
-up.m
-up.mm
-up.s
+p = UnitRegistry(cache_folder=os.path.join(os.path.dirname(__file__), "__pintcache__"))
+p.m
+p.mm
+p.s
 
 
-def bench_init(name: str, _u: UnitRegistry | type, n: int = 1_000_000) -> float:
-    m = _u.m
-    mm = _u.mm
+def bench_init(name: str, ureg: UnitRegistry | type, n: int = 1_000_000) -> float:
+    m = ureg.m
+    mm = ureg.mm
 
     t0 = time.perf_counter()
     for _ in range(n):
@@ -26,9 +27,9 @@ def bench_init(name: str, _u: UnitRegistry | type, n: int = 1_000_000) -> float:
     return dt
 
 
-def bench_units(name: str, _u: UnitRegistry | type, n: int = 1_000_000) -> float:
-    m = _u.m
-    s = _u.s
+def bench_units(name: str, ureg: UnitRegistry | type, n: int = 1_000_000) -> float:
+    m = ureg.m
+    s = ureg.s
 
     t0 = time.perf_counter()
     for _ in range(n):
@@ -40,10 +41,10 @@ def bench_units(name: str, _u: UnitRegistry | type, n: int = 1_000_000) -> float
     return dt
 
 
-def bench_array_ops(name: str, _u: UnitRegistry | type, q: type, n: int = 1_000) -> float:
+def bench_array_ops(name: str, ureg: UnitRegistry | type, q: type, n: int = 1_000) -> float:
     arr = np.ones(1_000_000)
-    a = q(arr, _u.m)
-    b = q(arr, _u.mm)
+    a = q(arr, ureg.m)
+    b = q(arr, ureg.mm)
 
     t0 = time.perf_counter()
     for _ in range(n):
@@ -54,13 +55,13 @@ def bench_array_ops(name: str, _u: UnitRegistry | type, q: type, n: int = 1_000)
     return dt
 
 
-def bench_conversion(name: str, _u: UnitRegistry | type, q: type, n: int = 1_000) -> float:
+def bench_conversion(name: str, ureg: UnitRegistry | type, q: type, n: int = 1_000) -> float:
     arr = np.ones(1_000_000)
-    a = q(arr, _u.mm)
+    a = q(arr, ureg.mm)
 
     t0 = time.perf_counter()
     for _ in range(n):
-        _ = a.to(_u.m)
+        _ = a.to(ureg.m)
 
     dt = time.perf_counter() - t0
     print(f"conversion({name}): {dt:.2f} s")
@@ -69,24 +70,24 @@ def bench_conversion(name: str, _u: UnitRegistry | type, q: type, n: int = 1_000
 
 if __name__ == "__main__":
     n_samples = 100_000
-    dt_pint = bench_init("pint", up, n=n_samples)
+    dt_pint = bench_init("pint", p, n=n_samples)
     dt_qunits = bench_init("qunits", u, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
 
     n_samples = 1_000_000
-    dt_pint = bench_units("pint", up, n=n_samples)
+    dt_pint = bench_units("pint", p, n=n_samples)
     dt_qunits = bench_units("qunits", u, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
 
     n_samples = 1_000
-    dt_pint = bench_array_ops("pint", up, up.Quantity, n=n_samples)
+    dt_pint = bench_array_ops("pint", p, p.Quantity, n=n_samples)
     dt_qunits = bench_array_ops("qunits", u, Quantity, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
 
     n_samples = 1_000
-    dt_pint = bench_conversion("pint", up, up.Quantity, n=n_samples)
+    dt_pint = bench_conversion("pint", p, p.Quantity, n=n_samples)
     dt_qunits = bench_conversion("qunits", u, Quantity, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
 
-    print(f"dimension cache size: {len(_dimension_cache)}")
-    print(f"unit cache size: {len(_unit_cache)}")
+    print(f"qunits dimension cache size: {len(_dimension_cache)}")
+    print(f"qunits unit cache size: {len(_unit_cache)}")

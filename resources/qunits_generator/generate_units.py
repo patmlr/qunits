@@ -1,6 +1,6 @@
 import os
 
-from config import SYMBOL_FACTORS, SYMBOL_PREFIXES, SYMBOLS
+from config import SYMBOL_CONTEXTS, SYMBOL_FACTORS, SYMBOL_PREFIXES, SYMBOLS
 
 from qunits.prefix import PREFIX_DICT
 
@@ -11,20 +11,24 @@ def generate_units() -> None:
     dimensions = sorted(set(SYMBOLS.values()), key=lambda d: d.__name__)
     with open(path, "w") as f:
         f.write("# Auto-generated units with prefixes\n\n")
+        f.write("from math import pi\n\n")
         f.write("import scipy.constants as sc\n\n")
         f.write("from qunits.dimension import (\n")
         f.write(f"    {',\n    '.join(d.__name__ for d in dimensions)},\n)\n")
-        f.write("from qunits.unit import Unit\n\n")
+        f.write("from qunits.unit import I, Unit\n\n")
         f.write('__all__ = ["u"]\n\n\n')
         f.write('class u:\n    """The unit registry."""\n\n')
+        f.write("    I = I\n\n")
 
         for symbol, dimension in SYMBOLS.items():
             for prefix_str, prefix_exp in PREFIX_DICT.items():
                 if not (SYMBOL_PREFIXES[symbol][0] <= prefix_exp <= SYMBOL_PREFIXES[symbol][1]):
                     continue
 
-                prefix = 10**prefix_exp
                 factor = SYMBOL_FACTORS[symbol][0]
+                context = SYMBOL_CONTEXTS.get(symbol, "")
+                context_str = f'context="{context}", ' if context else ""
+                prefix = 10**prefix_exp
 
                 scale_str = f"{prefix:.1e} * {SYMBOL_FACTORS[symbol][1]}" if factor != 1.0 else f"{prefix:.1e}"
 
@@ -33,7 +37,8 @@ def generate_units() -> None:
 
                 f.write(
                     f"    {unit_name} = Unit("
-                    f'{scale_str}, {dimension.__name__}, symbol="{symbol}", prefix_exp={prefix_exp})\n'
+                    f"{scale_str}, {dimension.__name__}, {context_str}"
+                    f'symbol="{symbol}", prefix_exp={prefix_exp})\n'
                 )
 
 

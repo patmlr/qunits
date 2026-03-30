@@ -2,3 +2,8 @@
   link: /tutorials/start.html
   title: Getting started
   identifier: /start
+
+- name: benchmark
+  link: /tutorials/benchmark.html
+  title: Benchmark
+  identifier: /benchmark

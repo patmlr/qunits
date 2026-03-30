@@ -22,6 +22,12 @@ title: qunits.Unit
 </em>
 ,&nbsp;
 <em class="sig-param">
+<span class="n"><span class="pre">context</span></span>
+<span class="o"><span class="pre">=</span></span>
+<span class="default_value"><span class="pre string">""</span></span>
+</em>
+,&nbsp;
+<em class="sig-param">
 <span class="n"><span class="pre">symbol</span></span>
 <span class="o"><span class="pre">=</span></span>
 <span class="default_value"><span class="pre">None</span></span>
@@ -32,7 +38,7 @@ title: qunits.Unit
 <span class="o"><span class="pre">=</span></span>
 <span class="default_value"><span class="pre">None</span></span>
 </em>
-<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/qunits/unit.py#L27-L231' }}"><span class="sig-source">[source]</span></a>
+<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L34-L260' }}"><span class="sig-source">[source]</span></a>
 </dt>
 <dd class="field-body"><p>The base class for units.
 
@@ -48,6 +54,8 @@ title: qunits.Unit
 <dd class="field-desc"><p>The scale by which the unit is multiplied (e.g., <code>1.0</code> for Tesla, <code>1e-4</code> for Gauss).</p></dd>
 <dt>dimension<span class="classifier"><em>type[qunits.dimension.Dimension]</em></span></dt>
 <dd class="field-desc"><p>The dimension of the unit (e.g., <code>Length</code>, <code>Mass</code>, <code>Time</code>).</p></dd>
+<dt>context<span class="classifier"><em>str</em></span></dt>
+<dd class="field-desc"><p>The context of the unit (e.g., <code>""</code>, <code>"angle"</code>, <code>"solid-angle"</code>).</p></dd>
 <dt>symbol<span class="classifier"><em>str | None</em></span></dt>
 <dd class="field-desc"><p>The symbol of the unit (e.g., <code>"m"</code> for meter, <code>"s"</code> for second).</p></dd>
 <dt>prefix_exp<span class="classifier"><em>int | None</em></span></dt>

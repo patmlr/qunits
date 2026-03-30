@@ -22,3 +22,8 @@ PREFIX_DICT_EXP: dict[int, str] = {
     30: "Q",
 }
 PREFIX_DICT: dict[str, int] = {v: k for k, v in PREFIX_DICT_EXP.items()}
+
+CONTEXT_DICT: dict[str, str] = {
+    "angle": "rad",
+}
+CONTEXT_DICT_UNIT: dict[str, str] = {v: k for k, v in CONTEXT_DICT.items()}

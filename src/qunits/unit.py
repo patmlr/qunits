@@ -1,7 +1,8 @@
 import math
-from typing import overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 import numpy as np
+from numpy._core.multiarray import flagsobj
 from numpy.typing import ArrayLike, NDArray
 
 from qunits.dimension import (
@@ -9,7 +10,10 @@ from qunits.dimension import (
     Dimensionless,
     add_dimension,
 )
-from qunits.prefix import PREFIX_DICT_EXP
+from qunits.prefix import CONTEXT_DICT, PREFIX_DICT_EXP
+
+if TYPE_CHECKING:
+    from numpy._core._internal import _ctypes
 
 __all__ = ["Quantity", "Unit"]
 
@@ -19,9 +23,12 @@ type float_like = float | np.floating
 type scalar = int_like | float_like | NDArray[np.integer | np.floating]
 type array_like = ArrayLike
 
+_trigonometric_functions = {np.sin, np.cos, np.tan}
+_additive_functions = {np.add, np.subtract}
+
 UNIT_SYSTEMS = {"si"}
 
-_unit_cache: dict[tuple[tuple[int, ...], float], "Unit"] = {}
+_unit_cache: dict[tuple[tuple[int, ...], float, str], "Unit"] = {}
 
 
 class Unit:
@@ -33,16 +40,18 @@ class Unit:
         cls,
         scale: scalar = 1.0,
         dimension: type[Dimension] = Dimensionless,
+        context: str = "",
         symbol: str | None = None,
         prefix_exp: int | None = None,
     ) -> "Unit":
-        key = (dimension.vec, float(scale))
+        key = (dimension.vec, float(scale), context)
         return _unit_cache.setdefault(key, super().__new__(cls))
 
     def __init__(
         self,
         scale: scalar = 1.0,
         dimension: type[Dimension] = Dimensionless,
+        context: str = "",
         symbol: str | None = None,
         prefix_exp: int | None = None,
     ) -> None:
@@ -55,11 +64,13 @@ class Unit:
 
         :param scale: The scale by which the unit is multiplied (e.g., `1.0` for Tesla, `1e-4` for Gauss).
         :param dimension: The dimension of the unit (e.g., `Length`, `Mass`, `Time`).
+        :param context: The context of the unit (e.g., `""`, `"angle"`, `"solid-angle"`).
         :param symbol: The symbol of the unit (e.g., `"m"` for meter, `"s"` for second).
         :param prefix_exp: The exponent of the prefix (e.g., `-3` for milli, `3` for kilo).
         """
         self.scale = float(scale)
         self.dimension = dimension
+        self.context = context
 
         if not hasattr(self, "symbol"):
             self.symbol = symbol
@@ -92,9 +103,8 @@ class Unit:
             )
 
         if isinstance(unit, Unit):
-            dim_vec = tuple(a - b for a, b in zip(unit.d.vec, self.d.vec))
-            if any(dim_vec):
-                raise ValueError("Dimension mismatch")
+            if unit.d != self.d:
+                raise ValueError("Dimension mismatch in unit conversion")
 
             return Quantity(self.scale / unit.scale, unit)
 
@@ -111,12 +121,17 @@ class Unit:
         if self.scale == 1.0:
             return Quantity(1.0, self)
 
-        return Quantity(self.scale, Unit(1.0, dimension=self.d, symbol=self.d.si_symbol, prefix_exp=0))
+        return Quantity(
+            self.scale, Unit(1.0, dimension=self.d, context=self.context, symbol=self.d.si_symbol, prefix_exp=0)
+        )
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.scale:e}, {self.d.name})"
+        context_str = f', "{self.context}"' if self.context else ""
+        return f"{self.__class__.__name__}({self.scale:e}, {self.d.name}{context_str})"
 
     def __str__(self) -> str:
+        context_str = f"*{CONTEXT_DICT.get(self.context, '')}" if self.context else ""
+
         if self.d.prefixed:
             prefix_exp = math.log10(self.scale)
 
@@ -137,7 +152,9 @@ class Unit:
 
                 self.symbol = self.d.si_symbol
 
-            return f"{prefix}{self.symbol}"
+            if f"*{self.symbol}" == context_str:
+                context_str = ""
+            return f"{prefix}{self.symbol}{context_str}"
 
         if self.symbol is None:
             if self.scale != 1.0:
@@ -145,7 +162,9 @@ class Unit:
 
             self.symbol = self.d.si_symbol
 
-        return self.symbol
+        if f"*{self.symbol}" == context_str:
+            context_str = ""
+        return f"{self.symbol}{context_str}"
 
     @overload
     def __mul__(self, other: array_like) -> "Quantity": ...
@@ -163,8 +182,14 @@ class Unit:
             if self.prefix_exp is not None and other.prefix_exp is not None:
                 prefix_exp = self.prefix_exp + other.prefix_exp
 
+            context = ""
+            if self.context:
+                context = "" if other.context else self.context
+            elif other.context:
+                context = "" if self.context else other.context
+
             scale = self.scale * other.scale
-            return Unit(scale=scale, dimension=dimension, prefix_exp=prefix_exp)
+            return Unit(scale=scale, dimension=dimension, context=context, prefix_exp=prefix_exp)
 
         return Quantity(other, self)
 
@@ -193,8 +218,10 @@ class Unit:
             if self.prefix_exp is not None and other.prefix_exp is not None:
                 prefix_exp = self.prefix_exp - other.prefix_exp
 
+            context = self.context if self.context and not other.context else ""
+
             scale = self.scale / other.scale
-            return Unit(scale=scale, dimension=dimension, prefix_exp=prefix_exp)
+            return Unit(scale=scale, dimension=dimension, context=context, prefix_exp=prefix_exp)
 
         return Quantity(other, self)
 
@@ -227,8 +254,13 @@ class Unit:
         if self.prefix_exp is not None:
             prefix_exp = self.prefix_exp * power
 
+        context = self.context if self.context and power == 1 else ""
+
         scale = self.scale**power
-        return Unit(scale=scale, dimension=dimension, prefix_exp=prefix_exp)
+        return Unit(scale=scale, dimension=dimension, context=context, prefix_exp=prefix_exp)
+
+
+I = Unit()
 
 
 class Quantity:
@@ -252,7 +284,7 @@ class Quantity:
         """
         self.value = np.asarray(value, dtype=np.float64)
         if unit is None:
-            unit = Unit()
+            unit = I
         self.unit = unit
 
     def to(self, unit: "Unit | str") -> "Quantity":
@@ -274,6 +306,46 @@ class Quantity:
         q = self.unit.si()
         return Quantity(self.value * q.value, q.unit)
 
+    @property
+    def data(self) -> memoryview:
+        return self.value.data
+
+    @property
+    def flags(self) -> flagsobj:
+        return self.value.flags
+
+    @property
+    def dtype(self) -> np.dtype[np.float64]:
+        return self.value.dtype
+
+    @property
+    def size(self) -> int:
+        return self.value.size
+
+    @property
+    def itemsize(self) -> int:
+        return self.value.itemsize
+
+    @property
+    def nbytes(self) -> int:
+        return self.value.nbytes
+
+    @property
+    def ndim(self) -> int:
+        return self.value.ndim
+
+    @property
+    def shape(self) -> tuple[int, ...]:
+        return self.value.shape
+
+    @property
+    def strides(self) -> tuple[int, ...]:
+        return self.value.strides
+
+    @property
+    def ctypes(self) -> "_ctypes[int]":
+        return self.value.ctypes
+
     def __repr__(self) -> str:
         return f"{self.value} {self.unit}"
 
@@ -286,9 +358,8 @@ class Quantity:
     def __add__(self, other: "array_like | Quantity") -> "Quantity":
         if isinstance(other, Quantity):
             u = self.unit
-            dim_vec = tuple(a - b for a, b in zip(u.d.vec, other.unit.d.vec))
-            if any(dim_vec):
-                raise ValueError("Dimension mismatch")
+            if u.d != other.unit.d:
+                raise ValueError("Dimension mismatch in addition")
 
             scale = other.unit.scale / u.scale
 
@@ -306,9 +377,8 @@ class Quantity:
     def __sub__(self, other: "array_like | Quantity") -> "Quantity":
         if isinstance(other, Quantity):
             u = self.unit
-            dim_vec = tuple(a - b for a, b in zip(u.d.vec, other.unit.d.vec))
-            if any(dim_vec):
-                raise ValueError("Dimension mismatch")
+            if u.d != other.unit.d:
+                raise ValueError("Dimension mismatch in subtraction")
 
             scale = other.unit.scale / u.scale
             result = np.empty_like(self.value if len(self.value.shape) >= len(other.value.shape) else other.value)
@@ -321,9 +391,8 @@ class Quantity:
     def __rsub__(self, other: "array_like | Quantity") -> "Quantity":
         if isinstance(other, Quantity):
             u = self.unit
-            dim_vec = tuple(a - b for a, b in zip(u.d.vec, other.unit.d.vec))
-            if any(dim_vec):
-                raise ValueError("Dimension mismatch")
+            if u.d != other.unit.d:
+                raise ValueError("Dimension mismatch in subtraction")
 
             scale = other.unit.scale / u.scale
             result = np.empty_like(self.value if len(self.value.shape) >= len(other.value.shape) else other.value)
@@ -361,4 +430,50 @@ class Quantity:
         if isinstance(other, Unit):
             return Quantity(1 / self.value, other / self.unit)
 
-        return Quantity(np.asarray(other, dtype=np.float64) / self.value, Unit() / self.unit)
+        return Quantity(np.asarray(other, dtype=np.float64) / self.value, I / self.unit)
+
+    def __array_ufunc__(
+        self,
+        ufunc: np.ufunc,
+        method: Literal["__call__", "reduce", "reduceat", "accumulate", "outer", "at"],
+        *inputs: Any,
+        **kwargs: Any,
+    ) -> "Quantity":
+        if method != "__call__":
+            raise NotImplementedError(f"Method {method} not supported for `numpy.{ufunc.__name__}`")
+
+        values = [x.value if isinstance(x, Quantity) else x for x in inputs]
+        units = [x.unit if isinstance(x, Quantity) else I for x in inputs]
+
+        if ufunc in _trigonometric_functions:
+            unit = units[0]
+            if unit.d != Dimensionless or unit.context != "angle":
+                raise TypeError(
+                    'Trigonometric functions require dimensionless units with "angle" context.'
+                    ' Use `u.rad` or `u.pi` for angles.'
+                )
+
+            result = ufunc(*values, **kwargs)
+            return Quantity(result, unit)
+
+        if ufunc in _additive_functions:
+            u0, u1 = units
+            if u0.d != u1.d:
+                raise TypeError("Dimension mismatch in addition/subtraction")
+
+            result = ufunc(*values, **kwargs)
+            return Quantity(result, u0)
+
+        if ufunc is np.multiply:
+            u0, u1 = units
+            u = u0 * u1
+            result = ufunc(*values, **kwargs)
+            return Quantity(result, u)
+
+        if ufunc is np.divide:
+            u0, u1 = units
+            u = u0 / u1
+            result = ufunc(*values, **kwargs)
+            return Quantity(result, u)
+
+        raise NotImplementedError(f"`numpy.{ufunc.__name__}` not supported.")
