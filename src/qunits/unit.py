@@ -104,7 +104,9 @@ class Unit:
 
         if isinstance(unit, Unit):
             if unit.d != self.d:
-                raise ValueError("Dimension mismatch in unit conversion")
+                raise ValueError(
+                    f"Dimension mismatch in unit conversion. Cannot convert from {self.d.name} to {unit.d.name}."
+                )
 
             return Quantity(self.scale / unit.scale, unit)
 
@@ -112,11 +114,23 @@ class Unit:
             f"Invalid type of `unit`: {type(unit)}. Please use a `str` from the available unit systems {UNIT_SYSTEMS},"
             f" or a valid `Unit` instance, such as `u.m`."
         )
+    
+    def to_base_units(self, system: str = "si") -> "Quantity":
+        """Convert the unit into a `Quantity` in base units in the specified unit system.
+
+        :param system: The target unit system (e.g., `"si"`). Available unit systems: `{"si"}`.
+
+        :returns: (quantity) The unit converted into a `Quantity` in base units.
+        """
+        if system.lower() == "si":
+            return self.si()
+
+        raise ValueError(f"Unknown unit system: {system}. Please use one of {UNIT_SYSTEMS}.")
 
     def si(self) -> "Quantity":
         """Convert the unit into a `Quantity` in SI units.
 
-        :returns: (quantity) The unit in SI units.
+        :returns: (quantity) The unit as a `Quantity` in SI units.
         """
         if self.scale == 1.0:
             return Quantity(1.0, self)
@@ -268,7 +282,7 @@ class Quantity:
 
     __array_priority__ = 1000
 
-    def __init__(self, value: array_like, unit: "Unit | None" = None) -> None:
+    def __init__(self, value: "array_like | Quantity", unit: "Unit | None" = None) -> None:
         """The base class for quantities.
 
         - Multiplying or dividing an `array_like` with a `Unit` will return a `Quantity`.
@@ -282,10 +296,16 @@ class Quantity:
         :param value: The value of the quantity.
         :param unit: The unit of the quantity.
         """
-        self.value = np.asarray(value, dtype=np.float64)
-        if unit is None:
-            unit = I
-        self.unit = unit
+        if isinstance(value, Quantity):
+            if unit is not None:
+                value = value.to(unit)
+            self.value = value.value
+            self.unit = value.unit
+        else:
+            self.value = np.asarray(value, dtype=np.float64)
+            if unit is None:
+                unit = I
+            self.unit = unit
 
     def to(self, unit: "Unit | str") -> "Quantity":
         """Convert the quantity into a `Quantity` in the target `Unit` (system).
@@ -297,6 +317,18 @@ class Quantity:
         """
         q = self.unit.to(unit)
         return Quantity(self.value * q.value, q.unit)
+    
+    def to_base_units(self, system: str = "si") -> "Quantity":
+        """Convert the quantity into a `Quantity` in base units in the specified unit system.
+
+        :param system: The target unit system (e.g., `"si"`). Available unit systems: `{"si"}`.
+
+        :returns: (quantity) The quantity converted into base units.
+        """
+        if system.lower() == "si":
+            return self.si()
+
+        raise ValueError(f"Unknown unit system: {system}. Please use one of {UNIT_SYSTEMS}.")
 
     def si(self) -> "Quantity":
         """Convert the quantity into a `Quantity` in SI units.
@@ -305,6 +337,20 @@ class Quantity:
         """
         q = self.unit.si()
         return Quantity(self.value * q.value, q.unit)
+    
+    @property
+    def magnitude(self) -> NDArray[np.float64]:
+        """The magnitude of the quantity, i.e., the value without the unit."""
+        return self.value
+    
+    @property
+    def m(self) -> NDArray[np.float64]:
+        """The magnitude of the quantity, i.e., the value without the unit."""
+        return self.value
+    
+    @property
+    def T(self) -> "Quantity":
+        return Quantity(self.value.T, self.unit)
 
     @property
     def data(self) -> memoryview:
@@ -359,7 +405,9 @@ class Quantity:
         if isinstance(other, Quantity):
             u = self.unit
             if u.d != other.unit.d:
-                raise ValueError("Dimension mismatch in addition")
+                raise ValueError(
+                    f"Dimension mismatch in addition. Cannot add {u.d.name} and {other.unit.d.name}."
+                )
 
             scale = other.unit.scale / u.scale
 
@@ -378,7 +426,10 @@ class Quantity:
         if isinstance(other, Quantity):
             u = self.unit
             if u.d != other.unit.d:
-                raise ValueError("Dimension mismatch in subtraction")
+                raise ValueError(
+                    f"Dimension mismatch in subtraction. Cannot subtract {u.d.name} and {other.unit.d.name}."
+                )
+
 
             scale = other.unit.scale / u.scale
             result = np.empty_like(self.value if len(self.value.shape) >= len(other.value.shape) else other.value)
@@ -392,7 +443,9 @@ class Quantity:
         if isinstance(other, Quantity):
             u = self.unit
             if u.d != other.unit.d:
-                raise ValueError("Dimension mismatch in subtraction")
+                raise ValueError(
+                    f"Dimension mismatch in subtraction. Cannot subtract {u.d.name} and {other.unit.d.name}."
+                )
 
             scale = other.unit.scale / u.scale
             result = np.empty_like(self.value if len(self.value.shape) >= len(other.value.shape) else other.value)
@@ -459,7 +512,9 @@ class Quantity:
         if ufunc in _additive_functions:
             u0, u1 = units
             if u0.d != u1.d:
-                raise TypeError("Dimension mismatch in addition/subtraction")
+                raise ValueError(
+                    f"Dimension mismatch in {ufunc.__name__}. Cannot {ufunc.__name__} {u0.d.name} and {u1.d.name}."
+                )
 
             result = ufunc(*values, **kwargs)
             return Quantity(result, u0)

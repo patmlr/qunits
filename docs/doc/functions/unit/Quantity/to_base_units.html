@@ -1,24 +1,34 @@
 ---
 layout: default
-title: qunits.Action
+title: qunits.Quantity.to_base_units
 ---
 <div class="bd-content-main">
 <article class="bd-article code-prose">
-<!--h1>qunits.Action</h1-->
+<!--h1>qunits.Quantity.to_base_units</h1-->
 <dl class="py function">
 <dt class="func-sig">
-<span class="sig-prename"><span class="pre">qunits.</span></span><span class="sig-classname"><span class="pre">Action</span></span>
-<a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/dimension.py#L240-L247' }}"><span class="sig-source">[source]</span></a>
+<span class="sig-prename"><span class="pre">qunits.</span></span>
+<span class="sig-classname"><span class="pre">Quantity</span></span><span class="sig-prename"><span class="pre">.</span></span><span class="sig-name"><span class="pre">to_base_units</span></span>
+<span class="sig-paren">&nbsp;(&nbsp;</span>
+<em class="sig-param">
+<span class="n"><span class="pre">system</span></span>
+<span class="o"><span class="pre">=</span></span>
+<span class="default_value"><span class="pre string">"si"</span></span>
+</em>
+<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L321-L331' }}"><span class="sig-source">[source]</span></a>
 </dt>
-<dd class="field-body"><p>The dimension of action.</p>
+<dd class="field-body"><p>Convert the quantity into a <code>Quantity</code> in base units in the specified unit system.</p>
 <dl class="field-list">
-<dt class="field-head">Attributes<span class="colon">:</span></dt>
+<dt class="field-head">Parameters<span class="colon">:</span></dt>
 <dd class="field-par">
 <dl>
-<dt>name<span class="classifier"></span><span class="default_value"><span class="pre string">"Action"</span></span></dt>
-<dt>prefixed<span class="classifier"></span><span class="default_value"><span class="pre bool">False</span></span></dt>
-<dt>si_symbol<span class="classifier"></span><span class="default_value"><span class="pre string">"J*s"</span></span></dt>
-<dt>vec<span class="classifier"></span><span class="default_value"><span class="pre num">(-1, 2, 1, 0, 0, 0, 0)</span></span></dt></dl>
+<dt>system<span class="classifier"><em>str</em></span></dt>
+<dd class="field-desc"><p>The target unit system (e.g., <code>"si"</code>). Available unit systems: <code>{"si"}</code>.</p></dd></dl>
+</dd><dt class="field-head">Returns<span class="colon">:</span></dt>
+<dd class="field-par">
+<dl>
+<dt>quantity<span class="classifier"><em>Quantity</em></span></dt>
+<dd class="field-desc"><p> The quantity converted into base units.</p></dd></dl>
 </dd>
 </dl></dd>
 </dl>
@@ -36,7 +46,7 @@ title: qunits.Action
 <div class="bd-content-table-content">
 <ul class="extern"><li class="has-children">
 <a href="{{ '/doc/modules/dimension.html' | relative_url }}">qunits.dimension</a>
-<details open="">
+<details>
 <summary>
 <span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
 </summary>
@@ -47,8 +57,8 @@ title: qunits.Action
 </summary>
 <ul class="extern-a"></ul>
 </details>
-</li><li class="has-children spaced table-current"><a href="{{ '/doc/functions/dimension/Action/Action.html' | relative_url }}">qunits.Action</a>
-<details open="">
+</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Action/Action.html' | relative_url }}">qunits.Action</a>
+<details>
 <summary>
 <span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
 </summary>
@@ -228,19 +238,19 @@ title: qunits.Action
 </details>
 </li><li class="has-children">
 <a href="{{ '/doc/modules/unit.html' | relative_url }}">qunits.unit</a>
-<details>
+<details open="">
 <summary>
 <span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
 </summary>
 <ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/unit/Quantity/Quantity.html' | relative_url }}">qunits.Quantity</a>
-<details>
+<details open="">
 <summary>
 <span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
 </summary>
 <ul class="extern-a">
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/si.html' | relative_url }}">qunits.Quantity.si</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to.html' | relative_url }}">qunits.Quantity.to</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to_base_units.html' | relative_url }}">qunits.Quantity.to_base_units</a></li></ul>
+<li class="table-current"><a href="{{ '/doc/functions/unit/Quantity/to_base_units.html' | relative_url }}">qunits.Quantity.to_base_units</a></li></ul>
 </details>
 </li><li class="has-children spaced"><a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}">qunits.Unit</a>
 <details>
