@@ -24,6 +24,7 @@ from qunits.dimension import (
     Velocity,
     Voltage,
 )
+from qunits.prefix import Context
 
 SYMBOLS = {
     "percent": Dimensionless,
@@ -83,9 +84,9 @@ SYMBOL_FACTORS: dict[str, tuple[float, str]] = {
     "G": (1e-4, "1e-4"),
 }
 
-SYMBOL_CONTEXTS: dict[str, str] = {
-    "rad": "angle",
-    "pi": "angle",
+SYMBOL_CONTEXTS: dict[str, Context] = {
+    "rad": Context.ANGLE,
+    "pi": Context.ANGLE,
 }
 
 SYMBOL_PREFIXES: dict[str, tuple[int, int]] = {

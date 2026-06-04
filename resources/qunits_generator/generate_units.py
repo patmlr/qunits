@@ -2,7 +2,7 @@ import os
 
 from config import SYMBOL_CONTEXTS, SYMBOL_FACTORS, SYMBOL_PREFIXES, SYMBOLS
 
-from qunits.prefix import PREFIX_DICT
+from qunits.prefix import PREFIX_DICT, Context
 
 
 def generate_units() -> None:
@@ -15,6 +15,7 @@ def generate_units() -> None:
         f.write("import scipy.constants as sc\n\n")
         f.write("from qunits.dimension import (\n")
         f.write(f"    {',\n    '.join(d.__name__ for d in dimensions)},\n)\n")
+        f.write("from qunits.prefix import Context\n")
         f.write("from qunits.unit import I, Unit\n\n")
         f.write('__all__ = ["u"]\n\n\n')
         f.write('class u:\n    """The unit registry."""\n\n')
@@ -26,8 +27,8 @@ def generate_units() -> None:
                     continue
 
                 factor = SYMBOL_FACTORS[symbol][0]
-                context = SYMBOL_CONTEXTS.get(symbol, "")
-                context_str = f'context="{context}", ' if context else ""
+                context = SYMBOL_CONTEXTS.get(symbol, Context.I)
+                context_str = f"Context.{context.name}"
                 prefix = 10**prefix_exp
 
                 scale_str = f"{prefix:.1e} * {SYMBOL_FACTORS[symbol][1]}" if factor != 1.0 else f"{prefix:.1e}"
@@ -35,11 +36,9 @@ def generate_units() -> None:
                 unit_name = f"{prefix_str}{symbol}"
                 unit_name = unit_name.replace("as", "attosecond")
 
-                f.write(
-                    f"    {unit_name} = Unit("
-                    f"{scale_str}, {dimension.__name__}, {context_str}"
-                    f'symbol="{symbol}", prefix_exp={prefix_exp})\n'
-                )
+                exp_map = f'frozenset({{("{unit_name}", 1)}})'
+
+                f.write(f"    {unit_name} = Unit({scale_str}, {exp_map}, {dimension.__name__}, {context_str})\n")
 
 
 if __name__ == "__main__":

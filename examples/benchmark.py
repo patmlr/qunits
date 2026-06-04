@@ -57,7 +57,7 @@ def bench_units(name: str, ureg: UnitRegistry | type, n: int = 1_000_000) -> flo
     return dt
 
 
-def bench_array_ops(name: str, ureg: UnitRegistry | type, q: type, n: int = 1_000) -> float:
+def bench_array_ops(name: str, ureg: UnitRegistry | type, q: type, n: int = 200) -> float:
     arr = np.ones(1_000_000)
     a = q(arr, ureg.m)
     b = q(arr, ureg.mm)
@@ -65,17 +65,19 @@ def bench_array_ops(name: str, ureg: UnitRegistry | type, q: type, n: int = 1_00
     t0 = time.perf_counter()
     for _ in range(n):
         _ = a + b
+        _ = a - b
+        _ = a * b
+        _ = a / b
 
     dt = time.perf_counter() - t0
     print(f"array_ops({name}): {dt:.2f} s")
     return dt
 
 
-def bench_conversion(name: str, ureg: UnitRegistry | type, q: type, n: int = 1_000) -> float:
+def bench_conversion(name: str, ureg: UnitRegistry | type, q: type, n: int = 100_000) -> float:
     m = ureg.m
     mm = ureg.mm
-    arr = np.ones(1_000_000)
-    a = q(arr, mm)
+    a = q(5.0, mm)
 
     t0 = time.perf_counter()
     for _ in range(n):
@@ -103,12 +105,12 @@ if __name__ == "__main__":
     dt_qunits = bench_units("qunits", u, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
 
-    n_samples = 1_000
+    n_samples = 200
     dt_pint = bench_array_ops("pint", p, p.Quantity, n=n_samples)
     dt_qunits = bench_array_ops("qunits", u, Quantity, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
 
-    n_samples = 1_000
+    n_samples = 100_000
     dt_pint = bench_conversion("pint", p, p.Quantity, n=n_samples)
     dt_qunits = bench_conversion("qunits", u, Quantity, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")

@@ -1,3 +1,6 @@
+from enum import IntEnum
+from typing import Literal
+
 PREFIX_DICT_EXP: dict[int, str] = {
     -30: "q",
     -27: "r",
@@ -23,7 +26,28 @@ PREFIX_DICT_EXP: dict[int, str] = {
 }
 PREFIX_DICT: dict[str, int] = {v: k for k, v in PREFIX_DICT_EXP.items()}
 
-CONTEXT_DICT: dict[str, str] = {
-    "angle": "rad",
+type ExpMap = frozenset[tuple[str, int]]
+
+
+def _merge_exp_maps(a: ExpMap, b: ExpMap, sign_b: Literal[1, -1]) -> ExpMap:
+    exp_dict = dict(a)
+    for symbol, exp in b:
+        new = exp_dict.get(symbol, 0) + sign_b * exp
+        if new:
+            exp_dict[symbol] = new
+        else:
+            exp_dict.pop(symbol, None)
+    return frozenset(exp_dict.items())
+
+
+class Context(IntEnum):
+    """The context of a unit."""
+
+    I = 0
+    ANGLE = 1
+
+
+CONTEXT_DICT: dict[Context, str] = {
+    Context.ANGLE: "rad",
 }
-CONTEXT_DICT_UNIT: dict[str, str] = {v: k for k, v in CONTEXT_DICT.items()}
+CONTEXT_DICT_UNIT: dict[str, Context] = {v: k for k, v in CONTEXT_DICT.items()}

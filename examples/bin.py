@@ -5,11 +5,6 @@ from qunits import u
 
 p = UnitRegistry()
 
-p.m
-p.mT
-p.A
-p.rad
-
 
 print(p.m / p.mT)
 print(u.m / u.mT)
@@ -19,10 +14,18 @@ print()
 print(p.m / p.mT / p.A)
 print(u.m / u.mT / u.A)
 
-omega = 2 * u.pi * u.Hz
+omega = 2 * p.pi * p.MHz
+print(omega)
+rad = omega * p.s
+print(rad)
+print(rad.to_base_units())  # type: ignore
+
+omega = 2 * u.pi * u.MHz
 print(omega, omega.unit.context)
 rad = omega * u.s
 print(rad, rad.unit.context)
+print(rad.to_base_units())
+
 print("sin", np.sin(rad))
 print(2 * p.pi * p.Hz)
 print(50 * u.percent * u.rad)

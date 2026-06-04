@@ -6,6 +6,7 @@
 !.vscode/launch.json
 __pycache__
 __pintcache__
+profile.svg
 
 /build/
 /dist/
