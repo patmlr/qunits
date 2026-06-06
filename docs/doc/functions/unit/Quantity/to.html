@@ -13,21 +13,21 @@ title: qunits.Quantity.to
 <em class="sig-param">
 <span class="n"><span class="pre">unit</span></span>
 </em>
-<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L310-L319' }}"><span class="sig-source">[source]</span></a>
+<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L260-L269' }}"><span class="sig-source">[source]</span></a>
 </dt>
-<dd class="field-body"><p>Convert the quantity into a <code>Quantity</code> in the target <code>Unit</code> (system).</p>
+<dd class="field-body"><p>Convert the quantity into a <code>Quantity</code> in the target <code>Unit</code>.</p>
 <dl class="field-list">
 <dt class="field-head">Parameters<span class="colon">:</span></dt>
 <dd class="field-par">
 <dl>
-<dt>unit<span class="classifier"><em>Unit | str</em></span></dt>
+<dt>unit<span class="classifier"><em>Unit | None</em></span></dt>
 <dd class="field-desc"><p>The target unit as a <code>Unit</code> instance (e.g., <code>u.m</code>),
-            or the name of the target unit system (e.g., <code>"si"</code>). Available unit systems: <code>{"si"}</code>.</p></dd></dl>
+            or <code>None</code> to convert to SI base units.</p></dd></dl>
 </dd><dt class="field-head">Returns<span class="colon">:</span></dt>
 <dd class="field-par">
 <dl>
 <dt>quantity<span class="classifier"><em>Quantity</em></span></dt>
-<dd class="field-desc"><p> The quantity converted into the target <code>Unit</code> (system).</p></dd></dl>
+<dd class="field-desc"><p> The quantity converted into the target <code>Unit</code>.</p></dd></dl>
 </dd>
 </dl></dd>
 </dl>
@@ -227,6 +227,22 @@ title: qunits.Quantity.to
 </li></ul>
 </details>
 </li><li class="has-children">
+<a href="{{ '/doc/modules/prefix.html' | relative_url }}">qunits.prefix</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/prefix/Context/Context.html' | relative_url }}">qunits.Context</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li>
+<li class="spaced"><a href="{{ '/doc/functions/prefix/merge_exp_maps.html' | relative_url }}">qunits.merge_exp_maps</a></li></ul>
+</details>
+</li><li class="has-children">
 <a href="{{ '/doc/modules/registry.html' | relative_url }}">qunits.registry</a>
 <details>
 <summary>
@@ -247,6 +263,8 @@ title: qunits.Quantity.to
 <span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
 </summary>
 <ul class="extern-a">
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/m_as.html' | relative_url }}">qunits.Quantity.m_as</a></li>
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/magnitude_as.html' | relative_url }}">qunits.Quantity.magnitude_as</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/si.html' | relative_url }}">qunits.Quantity.si</a></li>
 <li class="table-current"><a href="{{ '/doc/functions/unit/Quantity/to.html' | relative_url }}">qunits.Quantity.to</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to_base_units.html' | relative_url }}">qunits.Quantity.to_base_units</a></li></ul>

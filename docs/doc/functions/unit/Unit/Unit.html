@@ -11,55 +11,50 @@ title: qunits.Unit
 <span class="sig-paren">&nbsp;(&nbsp;</span>
 <em class="sig-param">
 <span class="n"><span class="pre">scale</span></span>
-<span class="o"><span class="pre">=</span></span>
-<span class="default_value"><span class="pre num">1.0</span></span>
+</em>
+,&nbsp;
+<em class="sig-param">
+<span class="n"><span class="pre">exp_map</span></span>
 </em>
 ,&nbsp;
 <em class="sig-param">
 <span class="n"><span class="pre">dimension</span></span>
-<span class="o"><span class="pre">=</span></span>
-<span class="default_value"><span class="pre string">"Dimensionless"</span></span>
 </em>
 ,&nbsp;
 <em class="sig-param">
 <span class="n"><span class="pre">context</span></span>
-<span class="o"><span class="pre">=</span></span>
-<span class="default_value"><span class="pre string">""</span></span>
 </em>
-,&nbsp;
-<em class="sig-param">
-<span class="n"><span class="pre">symbol</span></span>
-<span class="o"><span class="pre">=</span></span>
-<span class="default_value"><span class="pre">None</span></span>
-</em>
-,&nbsp;
-<em class="sig-param">
-<span class="n"><span class="pre">prefix_exp</span></span>
-<span class="o"><span class="pre">=</span></span>
-<span class="default_value"><span class="pre">None</span></span>
-</em>
-<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L34-L274' }}"><span class="sig-source">[source]</span></a>
+<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L62-L227' }}"><span class="sig-source">[source]</span></a>
 </dt>
-<dd class="field-body"><p>The base class for units.
-
-        Creating a new unit with the same <code>dimension</code> and <code>scale</code> of an existing unit
-        will return the cached instance.
-        The <code>symbol</code> and <code>prefix_exp</code> attributes are only used for string representation
-        and are set to the first created unit.</p>
+<dd class="field-body"><p>Create a new <code>Unit</code> instance.</p>
 <dl class="field-list">
 <dt class="field-head">Parameters<span class="colon">:</span></dt>
 <dd class="field-par">
 <dl>
 <dt>scale<span class="classifier"><em>scalar</em></span></dt>
-<dd class="field-desc"><p>The scale by which the unit is multiplied (e.g., <code>1.0</code> for Tesla, <code>1e-4</code> for Gauss).</p></dd>
+<dd class="field-desc"><p>The scale factor of the unit relative to the SI base units.</p></dd>
+<dt>exp_map<span class="classifier"><em>ExpMap</em></span></dt>
+<dd class="field-desc"><p>The <code>ExpMap</code> of the unit.</p></dd>
 <dt>dimension<span class="classifier"><em>type[qunits.dimension.Dimension]</em></span></dt>
-<dd class="field-desc"><p>The dimension of the unit (e.g., <code>Length</code>, <code>Mass</code>, <code>Time</code>).</p></dd>
-<dt>context<span class="classifier"><em>str</em></span></dt>
-<dd class="field-desc"><p>The context of the unit (e.g., <code>""</code>, <code>"angle"</code>, <code>"solid-angle"</code>).</p></dd>
-<dt>symbol<span class="classifier"><em>str | None</em></span></dt>
-<dd class="field-desc"><p>The symbol of the unit (e.g., <code>"m"</code> for meter, <code>"s"</code> for second).</p></dd>
-<dt>prefix_exp<span class="classifier"><em>int | None</em></span></dt>
-<dd class="field-desc"><p>The exponent of the prefix (e.g., <code>-3</code> for milli, <code>3</code> for kilo).</p></dd></dl>
+<dd class="field-desc"><p>The <code>Dimension</code> of the unit.</p></dd>
+<dt>context<span class="classifier"><em>Context</em></span></dt>
+<dd class="field-desc"><p>The <code>Context</code> of the unit.</p></dd></dl>
+</dd>
+<dt class="field-head">Properties<span class="colon">:</span></dt>
+<dd class="field-par">
+<dl>
+<dt>context<span class="classifier"><em>Context</em></span></dt>
+<dd class="field-desc"><p>The <code>Context</code> of the unit.</p></dd>
+<dt>d<span class="classifier"><em>type[qunits.dimension.Dimension]</em></span></dt>
+<dd class="field-desc"><p>The <code>Dimension</code> of the unit.</p></dd>
+<dt>dim<span class="classifier"><em>type[qunits.dimension.Dimension]</em></span></dt>
+<dd class="field-desc"><p>The <code>Dimension</code> of the unit.</p></dd>
+<dt>dimension<span class="classifier"><em>type[qunits.dimension.Dimension]</em></span></dt>
+<dd class="field-desc"><p>The <code>Dimension</code> of the unit.</p></dd>
+<dt>exp_map<span class="classifier"><em>ExpMap</em></span></dt>
+<dd class="field-desc"><p>The <code>ExpMap</code> of the unit.</p></dd>
+<dt>scale<span class="classifier"><em>scalar</em></span></dt>
+<dd class="field-desc"><p>The scale factor of the unit relative to the SI base units.</p></dd></dl>
 </dd>
 </dl></dd>
 </dl>
@@ -259,6 +254,22 @@ title: qunits.Unit
 </li></ul>
 </details>
 </li><li class="has-children">
+<a href="{{ '/doc/modules/prefix.html' | relative_url }}">qunits.prefix</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/prefix/Context/Context.html' | relative_url }}">qunits.Context</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li>
+<li class="spaced"><a href="{{ '/doc/functions/prefix/merge_exp_maps.html' | relative_url }}">qunits.merge_exp_maps</a></li></ul>
+</details>
+</li><li class="has-children">
 <a href="{{ '/doc/modules/registry.html' | relative_url }}">qunits.registry</a>
 <details>
 <summary>
@@ -279,6 +290,8 @@ title: qunits.Unit
 <span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
 </summary>
 <ul class="extern-a">
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/m_as.html' | relative_url }}">qunits.Quantity.m_as</a></li>
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/magnitude_as.html' | relative_url }}">qunits.Quantity.magnitude_as</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/si.html' | relative_url }}">qunits.Quantity.si</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to.html' | relative_url }}">qunits.Quantity.to</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to_base_units.html' | relative_url }}">qunits.Quantity.to_base_units</a></li></ul>

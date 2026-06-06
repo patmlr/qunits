@@ -8,10 +8,11 @@ title: API Doc
 
 <h2>Modules</h2>
 
-<p><code>qunits</code> is split into three submodules.</p>
+<p><code>qunits</code> is split into four submodules.</p>
 
 <ul>
 <li><a href="{{ '/doc/modules/dimension.html' | relative_url }}"><em>dimension</em></a> &emsp; Contains the dimension definitions.</li>
+<li><a href="{{ '/doc/modules/prefix.html' | relative_url }}"><em>prefix</em></a> &emsp; Contains resources for prefix handling.</li>
 <li><a href="{{ '/doc/modules/registry.html' | relative_url }}"><em>registry</em></a> &emsp; Contains the unit registry <code>u</code>.</li>
 <li><a href="{{ '/doc/modules/unit.html' | relative_url }}"><em>unit</em></a> &emsp; Contains the <code>Unit</code> and the <code>Quantity</code> classes.</li>
 </ul>
@@ -236,6 +237,22 @@ Numerical objects with physical units are defined by the <a href="{{ '/doc/funct
 </li></ul>
 </details>
 </li><li class="has-children">
+<a href="{{ '/doc/modules/prefix.html' | relative_url }}">qunits.prefix</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/prefix/Context/Context.html' | relative_url }}">qunits.Context</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li>
+<li class="spaced"><a href="{{ '/doc/functions/prefix/merge_exp_maps.html' | relative_url }}">qunits.merge_exp_maps</a></li></ul>
+</details>
+</li><li class="has-children">
 <a href="{{ '/doc/modules/registry.html' | relative_url }}">qunits.registry</a>
 <details>
 <summary>
@@ -256,6 +273,8 @@ Numerical objects with physical units are defined by the <a href="{{ '/doc/funct
 <span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
 </summary>
 <ul class="extern-a">
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/m_as.html' | relative_url }}">qunits.Quantity.m_as</a></li>
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/magnitude_as.html' | relative_url }}">qunits.Quantity.magnitude_as</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/si.html' | relative_url }}">qunits.Quantity.si</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to.html' | relative_url }}">qunits.Quantity.to</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to_base_units.html' | relative_url }}">qunits.Quantity.to_base_units</a></li></ul>

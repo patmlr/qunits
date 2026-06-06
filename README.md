@@ -20,7 +20,9 @@ q = 2 * u.e  # >>> 2.0 e
 v = 2e5 * u.m / u.s  # >>> 200000.0 m/s
 B = 0.42 * u.mT  # >>> 0.42 mT
 
-F = q * v * B  # >>> 2.69165674512e-17 N
+F = q * v * B  # >>> 168000.0 e⋅m⋅mT/s
+F = F.to_base_units()  # >>> 2.6916567451199998e-17 N
+F = F.to(u.e * u.V / u.m)  # >>> 168.0 e⋅V/m
 ```
 
 ### Dependencies
@@ -31,5 +33,6 @@ F = q * v * B  # >>> 2.69165674512e-17 N
 ### Modules
 
 - _dimension_: Contains the dimension definitions.
+- _prefix_: Contains resources for prefix handling.
 - _registry_: Contains the unit registry `u`.
 - _unit_: Contains the `Unit` and the `Quantity` classes.

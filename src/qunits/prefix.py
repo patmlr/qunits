@@ -1,6 +1,8 @@
 from enum import IntEnum
 from typing import Literal
 
+__all__ = ["CONTEXT_DICT", "CONTEXT_DICT_UNIT", "PREFIX_DICT", "PREFIX_DICT_EXP", "Context", "ExpMap", "merge_exp_maps"]
+
 PREFIX_DICT_EXP: dict[int, str] = {
     -30: "q",
     -27: "r",
@@ -29,7 +31,14 @@ PREFIX_DICT: dict[str, int] = {v: k for k, v in PREFIX_DICT_EXP.items()}
 type ExpMap = frozenset[tuple[str, int]]
 
 
-def _merge_exp_maps(a: ExpMap, b: ExpMap, sign_b: Literal[1, -1]) -> ExpMap:
+def merge_exp_maps(a: ExpMap, b: ExpMap, sign_b: Literal[1, -1]) -> ExpMap:
+    """Merge two exponent maps.
+    
+    :param a: The first exponent map.
+    :param b: The second exponent map.
+    :param sign_b: Multiply (+1) or divide (-1) the second exponent map.
+    :returns: (exp_map) The merged exponent map.
+    """
     exp_dict = dict(a)
     for symbol, exp in b:
         new = exp_dict.get(symbol, 0) + sign_b * exp

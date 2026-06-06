@@ -8,33 +8,33 @@ title: Tutorials.Benchmark
 <p>Output of the benchmark described in this tutorial:</p>
 
 <pre id="code-block-0" class="code-block">
-init(pint): 2.74 s
-init(qunits): 0.28 s
-Speedup: 9.67x
+init(pint): 2.75 s
+init(qunits): 0.11 s
+Speedup: 24.52x
 
-inplace(pint): 3.58 s
-inplace(qunits): 0.83 s
-Speedup: 4.31x
+inplace(pint): 3.54 s
+inplace(qunits): 0.27 s
+Speedup: 12.99x
 
-arithmetics(pint): 2.71 s
-arithmetics(qunits): 2.78 s
-Speedup: 0.97x
+units(pint): 2.65 s
+units(qunits): 2.08 s
+Speedup: 1.27x
 
-array_ops(pint): 2.09 s
-array_ops(qunits): 1.18 s
-Speedup: 1.76x
+array_ops(pint): 1.24 s
+array_ops(qunits): 0.86 s
+Speedup: 1.43x
 
-conversion(pint): 1.09 s
-conversion(qunits): 1.08 s
-Speedup: 1.01x
+conversion(pint): 1.40 s
+conversion(qunits): 0.06 s
+Speedup: 23.58x
 
 qunits dimension cache size: 26
-qunits unit cache size: 201
+qunits unit cache size: 202
 </pre></br>
 
 <p>
     This tutorial shows benchmark test of <code>qunits</code> compared to <code>pint</code> for different operations.
-    The tests are split into four categories: initialization, standard arithmetics, array operations, and unit conversion.
+    The tests are split into five categories: initialization, standard arithmetics, unit creation, array operations, and unit conversion.
     First, we import the necessary modules and set up the unit registries.
 </p>
 
@@ -60,7 +60,7 @@ qunits unit cache size: 201
 </p>
 
 <div class="py-source"><pre>
-<span class="k">def</span><span class="w"> </span><span class="nf">bench_init</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bench_init</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100_000</span><span class="p">):</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">m</span>
     <span class="n">mm</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">mm</span>
 
@@ -73,7 +73,7 @@ qunits unit cache size: 201
     <span class="k">return</span> <span class="n">dt</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">bench_inplace</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100_000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bench_inplace</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100_000</span><span class="p">):</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">m</span>
     <span class="n">mm</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">mm</span>
 
@@ -82,17 +82,17 @@ qunits unit cache size: 201
 
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">a</span> <span class="o">+=</span> <span class="n">b</span>  <span class="c1"># type: ignore</span>
-        <span class="n">a</span> <span class="o">-=</span> <span class="n">b</span>  <span class="c1"># type: ignore</span>
-        <span class="n">a</span> <span class="o">*=</span> <span class="n">b</span>  <span class="c1"># type: ignore</span>
-        <span class="n">a</span> <span class="o">/=</span> <span class="n">b</span>  <span class="c1"># type: ignore</span>
+        <span class="n">a</span> <span class="o">+=</span> <span class="n">b</span>
+        <span class="n">a</span> <span class="o">-=</span> <span class="n">b</span>
+        <span class="n">a</span> <span class="o">*=</span> <span class="n">b</span>
+        <span class="n">a</span> <span class="o">/=</span> <span class="n">b</span>
 
     <span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;inplace(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dt</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">bench_units</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bench_units</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">):</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">m</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">s</span>
 
@@ -102,11 +102,11 @@ qunits unit cache size: 201
         <span class="n">_</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">s</span>
 
     <span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;arithmetics(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;units(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dt</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">bench_array_ops</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1_000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bench_array_ops</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
     <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">)</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">mm</span><span class="p">)</span>
@@ -114,21 +114,24 @@ qunits unit cache size: 201
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
 
     <span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array_ops(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dt</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">bench_conversion</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1_000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bench_conversion</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100_000</span><span class="p">):</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">m</span>
     <span class="n">mm</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">mm</span>
-    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">)</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mm</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">mm</span><span class="p">)</span>
 
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
     <span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;conversion(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
@@ -153,12 +156,12 @@ qunits unit cache size: 201
 <span class="n">dt_qunits</span> <span class="o">=</span> <span class="n">bench_units</span><span class="p">(</span><span class="s2">&quot;qunits&quot;</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Speedup: </span><span class="si">{</span><span class="n">dt_pint</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dt_qunits</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">1_000</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">200</span>
 <span class="n">dt_pint</span> <span class="o">=</span> <span class="n">bench_array_ops</span><span class="p">(</span><span class="s2">&quot;pint&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
 <span class="n">dt_qunits</span> <span class="o">=</span> <span class="n">bench_array_ops</span><span class="p">(</span><span class="s2">&quot;qunits&quot;</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Speedup: </span><span class="si">{</span><span class="n">dt_pint</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dt_qunits</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">1_000</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">100_000</span>
 <span class="n">dt_pint</span> <span class="o">=</span> <span class="n">bench_conversion</span><span class="p">(</span><span class="s2">&quot;pint&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
 <span class="n">dt_qunits</span> <span class="o">=</span> <span class="n">bench_conversion</span><span class="p">(</span><span class="s2">&quot;qunits&quot;</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Speedup: </span><span class="si">{</span><span class="n">dt_pint</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dt_qunits</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>

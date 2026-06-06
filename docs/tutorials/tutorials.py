@@ -14,24 +14,37 @@ STYLE = "catppuccin-latte"  # "tango"
 def example_0():
     from qunits import u
 
+    v = 42 * u.m / u.s  # >>> 42.0 m/s
+    v += 0.69 * u.mm / u.us  # >>> 732.0 m/s
+
+    s = 101 * u.m + 7 * u.s * v  # >>> 5225.0 m
+    s = s.to(u.km)  # >>> 5.225 km
+
+
+def example_1():
+    import numpy as np
+    from qunits import u
+
     q = 2 * u.e  # >>> 2.0 e
     v = 2e5 * u.m / u.s  # >>> 200000.0 m/s
     B = 0.42 * u.mT  # >>> 0.42 mT
 
-    F = q * v * B  # >>> 2.69165674512e-17 N
+    F = q * v * B  # >>> 168000.0 e⋅m⋅mT/s
+    F = F.to_base_units()  # >>> 2.6916567451199998e-17 N
+    F = F.to(u.e * u.V / u.m)  # >>> 168.0 e⋅V/m
 
+    omega = 2 * u.pi * u.kHz  # >>> 2.0 pi⋅kHz
+    T = np.linspace(0, 10, 6) * u.ms  # >>> [ 0.  2.  4.  6.  8. 10.] ms
 
-def example_1():
-    from qunits import u
-    # This imports all default units with prefixes.
+    Ft = F * np.sin(omega * T)  # >>> [ 0.  -127.14281921  ...  153.37480212] V⋅e/m
 
-    s = 8 * u.m
-    dt = 2 * u.ms
-    v = s / dt  # >>> 4000.0 m/s
-
-    a = v / (2 * u.s)  # >>> 2000.0 m/s^2
-
-    f = 200 * u.kg * a  # >>> 400.0 kN
+    print(q)
+    print(v)
+    print(B)
+    print(F)
+    print(omega)
+    print(T)
+    print(Ft)
 
 def example_2():
     import os
@@ -48,7 +61,7 @@ def example_2():
     p = UnitRegistry(cache_folder=pintcache)
 
 
-    def bench_init(name, ureg, n=100_000) -> float:
+    def bench_init(name, ureg, n=100_000):
         m = ureg.m
         mm = ureg.mm
 
@@ -61,7 +74,7 @@ def example_2():
         return dt
 
 
-    def bench_inplace(name, ureg, n: int = 100_000) -> float:
+    def bench_inplace(name, ureg, n=100_000):
         m = ureg.m
         mm = ureg.mm
 
@@ -70,17 +83,17 @@ def example_2():
 
         t0 = time.perf_counter()
         for _ in range(n):
-            a += b  # type: ignore
-            a -= b  # type: ignore
-            a *= b  # type: ignore
-            a /= b  # type: ignore
+            a += b
+            a -= b
+            a *= b
+            a /= b
 
         dt = time.perf_counter() - t0
         print(f"inplace({name}): {dt:.2f} s")
         return dt
 
 
-    def bench_units(name, ureg, n=1_000_000) -> float:
+    def bench_units(name, ureg, n=1_000_000):
         m = ureg.m
         s = ureg.s
 
@@ -90,11 +103,11 @@ def example_2():
             _ = m * s
 
         dt = time.perf_counter() - t0
-        print(f"arithmetics({name}): {dt:.2f} s")
+        print(f"units({name}): {dt:.2f} s")
         return dt
 
 
-    def bench_array_ops(name, ureg, q, n=1_000) -> float:
+    def bench_array_ops(name, ureg, q, n=200):
         arr = np.ones(1_000_000)
         a = q(arr, ureg.m)
         b = q(arr, ureg.mm)
@@ -102,21 +115,24 @@ def example_2():
         t0 = time.perf_counter()
         for _ in range(n):
             _ = a + b
+            _ = a - b
+            _ = a * b
+            _ = a / b
 
         dt = time.perf_counter() - t0
         print(f"array_ops({name}): {dt:.2f} s")
         return dt
 
 
-    def bench_conversion(name, ureg, q, n=1_000) -> float:
+    def bench_conversion(name, ureg, q, n=100_000):
         m = ureg.m
         mm = ureg.mm
-        arr = np.ones(1_000_000)
-        a = q(arr, mm)
+        a = q(5.0, mm)
 
         t0 = time.perf_counter()
         for _ in range(n):
             _ = a.to(m)
+            _ = a.m_as(m)
 
         dt = time.perf_counter() - t0
         print(f"conversion({name}): {dt:.2f} s")
@@ -138,12 +154,12 @@ def example_2():
     dt_qunits = bench_units("qunits", u, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
 
-    n_samples = 1_000
+    n_samples = 200
     dt_pint = bench_array_ops("pint", p, p.Quantity, n=n_samples)
     dt_qunits = bench_array_ops("qunits", u, Quantity, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
 
-    n_samples = 1_000
+    n_samples = 100_000
     dt_pint = bench_conversion("pint", p, p.Quantity, n=n_samples)
     dt_qunits = bench_conversion("qunits", u, Quantity, n=n_samples)
     print(f"Speedup: {dt_pint / dt_qunits:.2f}x\n")
@@ -177,5 +193,5 @@ def gen_example(n):
 
 if __name__ == "__main__":
     # gen_pycode_css()
-    gen_example(2)
-    example_2()
+    gen_example(0)
+    example_0()

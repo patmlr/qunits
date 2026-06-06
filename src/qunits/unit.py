@@ -13,7 +13,7 @@ from qunits.dimension import (
     pow_dimension,
     sub_dimension,
 )
-from qunits.prefix import Context, ExpMap, _merge_exp_maps
+from qunits.prefix import Context, ExpMap, merge_exp_maps
 
 if TYPE_CHECKING:
     from numpy._core._internal import _ctypes
@@ -66,6 +66,7 @@ class Unit:
     __slots__ = ("context", "dimension", "exp_map", "scale")
 
     context: Context
+    """The context of the unit. Units with different contexts are not compatible for addition or subtraction,"""
     dimension: type[Dimension]
     exp_map: ExpMap
     scale: float
@@ -77,6 +78,15 @@ class Unit:
         dimension: type[Dimension],
         context: Context,
     ) -> "Unit":
+        """Create a new `Unit` instance.
+        
+        :param scale: The scale factor of the unit relative to the SI base units.
+        :param exp_map: The `ExpMap` of the unit.
+        :param dimension: The `Dimension` of the unit.
+        :param context: The `Context` of the unit.
+
+        :returns: (unit) A new `Unit` instance with the specified properties.
+        """
         unit = _unit_cache.get(exp_map)
         if unit is not None:
             return unit
@@ -90,19 +100,21 @@ class Unit:
 
     @property
     def dim(self) -> type[Dimension]:
+        """The `Dimension` of the unit."""
         return self.dimension
 
     @property
     def d(self) -> type[Dimension]:
+        """The `Dimension` of the unit."""
         return self.dimension
 
     def to(self, unit: "Unit | None") -> "Quantity":
-        """Convert the unit into a `Quantity` in the target `Unit` (system).
+        """Convert the unit into a `Quantity` in the target `Unit`.
 
         :param unit: The target unit as a `Unit` instance (e.g., `u.m`),
             or `None` to convert to SI base units.
 
-        :returns: (quantity) The unit converted into the target `Unit` (system).
+        :returns: (quantity) The unit converted into the target `Unit`.
         """
         return Quantity(*_to(self, unit))
 
@@ -146,7 +158,7 @@ class Unit:
         """Multiply two units."""
         if isinstance(other, Unit):
             scale = self.scale * other.scale
-            exp_map = _merge_exp_maps(self.exp_map, other.exp_map, 1)
+            exp_map = merge_exp_maps(self.exp_map, other.exp_map, 1)
             dimension = new_dimension(self.d, add_dimension, other.d.vec)
 
             context = Context.I
@@ -179,7 +191,7 @@ class Unit:
         if isinstance(other, Unit):
             scale = self.scale / other.scale
 
-            exp_map = _merge_exp_maps(self.exp_map, other.exp_map, -1)
+            exp_map = merge_exp_maps(self.exp_map, other.exp_map, -1)
             dimension = new_dimension(self.d, sub_dimension, other.d.vec)
             context = self.context if self.context and not other.context else Context.I
 
@@ -199,7 +211,7 @@ class Unit:
             return other.__truediv__(self)
 
         scale = 1.0 / self.scale
-        exp_map = _merge_exp_maps(frozenset(), self.exp_map, -1)
+        exp_map = merge_exp_maps(frozenset(), self.exp_map, -1)
         dimension = new_dimension(self.d, inv_dimension)
 
         unit = Unit(scale, exp_map, dimension, Context.I)
@@ -228,15 +240,7 @@ class Quantity:
     unit: Unit
 
     def __init__(self, value: "array_like | Quantity", unit: "Unit | None" = None) -> None:
-        """The base class for quantities.
-
-        - Multiplying or dividing an `array_like` with a `Unit` will return a `Quantity`.
-        - Multiplying or dividing a `Quantity` by a `Unit` will return a new `Quantity`
-         with the same value and the combined unit.
-        - Multiplying or dividing two `Quantity` instances will return a new `Quantity`
-         with the combined value and the combined unit.
-        - Multiplying or dividing a `Quantity` by an `array_like` will return a new `Quantity`
-        with the scaled value and the same unit.
+        """The base class for quantities with units.
 
         :param value: The value of the quantity.
         :param unit: The unit of the quantity.
@@ -254,12 +258,12 @@ class Quantity:
             self.unit = unit
 
     def to(self, unit: "Unit | None") -> "Quantity":
-        """Convert the quantity into a `Quantity` in the target `Unit` (system).
+        """Convert the quantity into a `Quantity` in the target `Unit`.
 
         :param unit: The target unit as a `Unit` instance (e.g., `u.m`),
             or `None` to convert to SI base units.
 
-        :returns: (quantity) The quantity converted into the target `Unit` (system).
+        :returns: (quantity) The quantity converted into the target `Unit`.
         """
         scale, _unit = _to(self.unit, unit)
         return Quantity(self.value * scale, _unit)
@@ -301,76 +305,87 @@ class Quantity:
 
     @property
     def magnitude(self) -> float | NDArray[np.float64]:
-        """The magnitude of the quantity, i.e., the value without the unit."""
+        """The magnitude of the quantity, i.e., the value without the current unit."""
         return self.value
 
     @property
     def m(self) -> float | NDArray[np.float64]:
-        """The magnitude of the quantity, i.e., the value without the unit."""
+        """The magnitude of the quantity, i.e., the value without the current unit."""
         return self.value
 
     @property
     def T(self) -> "Quantity":
+        """The transpose of the quantity."""
         if isinstance(self.value, np.ndarray):
             return Quantity(self.value.T, self.unit)
         return self
 
     @property
     def data(self) -> memoryview:
+        """A `memoryview` of the data of the quantity if the value is an array."""
         if isinstance(self.value, np.ndarray):
             return self.value.data
         raise NotImplementedError("The `data` property is only available for `Quantity` instances with array values.")
 
     @property
     def flags(self) -> flagsobj:
+        """The flags of the quantity, if the value is an array."""
         if isinstance(self.value, np.ndarray):
             return self.value.flags
         raise NotImplementedError("The `flags` property is only available for `Quantity` instances with array values.")
 
     @property
     def dtype(self) -> np.dtype[np.float64]:
+        """The data type of the quantity."""
         if isinstance(self.value, np.ndarray):
             return self.value.dtype
         return np.dtype(np.float64)
 
     @property
     def size(self) -> int:
+        """The number of elements in the quantity."""
         if isinstance(self.value, np.ndarray):
             return self.value.size
         return 1
 
     @property
     def itemsize(self) -> int:
+        """The size in bytes of each element in the quantity."""
         if isinstance(self.value, np.ndarray):
             return self.value.itemsize
         return np.dtype(np.float64).itemsize
 
     @property
     def nbytes(self) -> int:
+        """The total number of bytes consumed by the elements of the quantity."""
         if isinstance(self.value, np.ndarray):
             return self.value.nbytes
         return np.dtype(np.float64).itemsize
 
     @property
     def ndim(self) -> int:
+        """The number of array dimensions of the quantity."""
         if isinstance(self.value, np.ndarray):
             return self.value.ndim
         return 0
 
     @property
     def shape(self) -> tuple[int, ...]:
+        """The array shape of the quantity."""
         if isinstance(self.value, np.ndarray):
             return self.value.shape
         return ()
 
     @property
     def strides(self) -> tuple[int, ...]:
+        """The strides of the quantity."""
         if isinstance(self.value, np.ndarray):
             return self.value.strides
         return ()
 
     @property
     def ctypes(self) -> "_ctypes[int]":
+        """The ctypes of the quantity if the value is an array."""
         if isinstance(self.value, np.ndarray):
             return self.value.ctypes
         raise NotImplementedError("The `ctypes` property is only available for `Quantity` instances with array values.")

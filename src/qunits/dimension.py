@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import Any
 
-from qunits.prefix import ExpMap, _merge_exp_maps
+from qunits.prefix import ExpMap, merge_exp_maps
 
 __all__ = [
     "Acceleration",
@@ -356,7 +356,7 @@ def new_dimension(dimension: type[Dimension], func: Callable[..., DimensionVec],
         dimension_delta = _dimension_cache.get(vec_delta)
         if dimension_delta is None:
             dimension_delta = new_dimension(dimension, id_dimension)
-        si_map = _merge_exp_maps(dimension.si_map, dimension_delta.si_map, 1)
+        si_map = merge_exp_maps(dimension.si_map, dimension_delta.si_map, 1)
         name = f"{dimension.name}__MUL__{dimension_delta.name}"
 
     elif func is sub_dimension:
@@ -364,11 +364,11 @@ def new_dimension(dimension: type[Dimension], func: Callable[..., DimensionVec],
         dimension_delta = _dimension_cache.get(vec_delta)
         if dimension_delta is None:
             dimension_delta = new_dimension(dimension, id_dimension)
-        si_map = _merge_exp_maps(dimension.si_map, dimension_delta.si_map, -1)
+        si_map = merge_exp_maps(dimension.si_map, dimension_delta.si_map, -1)
         name = f"{dimension.name}__DIV__{dimension_delta.name}"
 
     elif func is inv_dimension:
-        si_map = _merge_exp_maps(frozenset(), dimension.si_map, -1)
+        si_map = merge_exp_maps(frozenset(), dimension.si_map, -1)
         name = f"Inv__{dimension.name}"
 
     elif func is pow_dimension:

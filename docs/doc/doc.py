@@ -6,6 +6,8 @@ from qunits import Unit
 from numpy import ndarray
 from numpy.typing import ArrayLike as array_like
 
+from qunits.prefix import ExpMap
+
 MODULE_INCLUDE = {
     "qtypes": {
         "asarray",
@@ -19,7 +21,7 @@ MODULE_INCLUDE = {
         }
     }
 FOLDER_FILES = set()
-FILES = sorted(["dimension", "registry", "unit"])
+FILES = sorted(["dimension", "prefix", "registry", "unit"])
 
 
 def is_num(val):
@@ -54,6 +56,7 @@ def type_to_str(_type):
         str("None" if _type is inspect._empty else ret)
         .replace("typing.", "")
         .replace("<class ", "")
+        .replace("<enum ", "")
         .replace(">", "")
         .replace("'", "")
     )
@@ -86,6 +89,21 @@ def docstring_to_html(rest):
         rest = "<code>" + rest[1:]
     html = rest.replace(" `", " <code>").replace("(`", "(<code>").replace("[`", "[<code>").replace("`", "</code>")
     return html
+
+
+def format_exp_map(exp_map: ExpMap) -> str:
+    ret = '<span class="pre class">frozenset</span>({'
+    exp_map_dict = dict(exp_map)
+    for symbol, exp in exp_map_dict.items():
+        ret += f'(<span class="pre string">"{symbol}"</span>, <span class="pre num">{exp}</span>), '
+
+    if exp_map_dict:
+        ret = ret[:-2]
+        ret += "})"
+    else:
+        ret = ret[:-1]
+        ret += ")"
+    return ret
 
 
 def load_table_template():
@@ -210,7 +228,7 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
     j = namespace.rfind(".")
 
     class_flag = 1 if f[0].isupper() else 2 if namespace[j + 1 :][0].isupper() else 0
-    type_flag = "See help(type(self)) for accurate signature" in func_doc[f] and class_flag == 1
+    type_flag = ") for accurate signature" in func_doc[f] and class_flag == 1
 
     if f == "u":
         class_flag = 1
@@ -220,6 +238,7 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
         func_doc[f] = funcs[f].__doc__
 
     class_funcs = [m for m in inspect.getmembers(funcs[f], inspect.isfunction) if not m[0].startswith("_")]
+    class_props = [m for m in inspect.getmembers(funcs[f], inspect.isdatadescriptor) if not m[0].startswith("_")]
     class_attr = [m for m in inspect.getmembers(funcs[f]) if not m[0].startswith("_") and m not in class_funcs]
 
     i = temp.index("<!--p>sig</p-->")
@@ -320,6 +339,7 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
     unit_html = (
         '<span class="default_value"><span class="pre_colorclass_">Unit</span></span><span>(</span>'
         '<span class="default_value"><span class="pre_colorscale_">_scale_</span></span>, '
+        '<span class="default_value">_expmap_</span>, '
         '<span class="default_value"><span class="pre_colordimension_">_dimension_</span></span>_context_'
         '<span>)</span>'
     )
@@ -331,12 +351,18 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
         html += "\n" + "\n".join(temp[i + 3 : i + 5])
 
         for a, a_value in class_attr:
+            if "Context" == funcs[f].__name__:
+                if a[0].islower():
+                    continue
             if isinstance(a_value, Unit):
-                a_str = unit_html.replace("_colorscale_", " num").replace("_colordimension_", " class").replace("_scale_", f"{a_value.scale:e}").replace("_dimension_", a_value.d.name).replace("_context_", f', <span class="default_value"><span class="pre string">"{a_value.context}"</span></span>' if a_value.context else "")
+                a_str = unit_html.replace("_colorscale_", " num").replace("_colordimension_", " class").replace("_scale_", f"{a_value.scale:e}").replace("_dimension_", a_value.d.name).replace("_expmap_", format_exp_map(a_value.exp_map)).replace("_context_", f', <span class="default_value"><span class="pre class">Context</span>.<span class="pre func">{a_value.context.name}</span></span>')
             else:
-                if isinstance(a_value, str):
-                    a_value = f'"{a_value}"'
-                a_str = f'<span class="default_value"><span class="pre_colorclass_">{str(a_value)}</span></span>'
+                if isinstance(a_value, frozenset):
+                    a_str = f'<span class="default_value">{format_exp_map(a_value)}</span>'
+                else:
+                    if isinstance(a_value, str):
+                        a_value = f'"{a_value}"'
+                    a_str = f'<span class="default_value"><span class="pre_colorclass_">{str(a_value)}</span></span>'
 
             color_class = ""
             if isinstance(a_value, bool):
@@ -354,14 +380,14 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
         html += "\n".join(temp[i + 6 : i + 8])
 
     # Parameters
-    if len([k for k in func_sig[f].parameters.keys() if k != "self"]):
+    if len([k for k in func_sig[f].parameters.keys() if k not in {"self", "cls"}]) and funcs[f].__name__ not in {"Context"}:
         i = temp.index("<!--p>pars-h</p-->") + 1
         if func_sig[f].parameters:
             html += "\n" + temp[i]
         i = temp.index("<!--p>pars</p-->") + 1
         html += "\n" + "\n".join(temp[i : i + 2])
         for p, p_sig in func_sig[f].parameters.items():
-            if p == "self":
+            if p in {"self", "cls"}:
                 continue
             p_desc = func_doc[f]
             if p_desc is None:
@@ -387,6 +413,46 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
             html += "\n" + "\n".join(temp[i + 2 : i + 4]).replace("_par_", p).replace(
                 "_par-type_", type_to_str(anno)
             ).replace("_par-description_", docstring_to_html(p_desc))
+        html += "\n".join(temp[i + 4 : i + 6])
+    
+    # Properties
+    if class_flag == 1 and not type_flag and class_props:
+        i = temp.index("<!--p>props-h</p-->") + 1
+        html += "\n" + temp[i]
+        i = temp.index("<!--p>props</p-->") + 1
+        html += "\n" + "\n".join(temp[i : i + 2])
+        for p, p_value in class_props:
+            anno = None
+            if p in func_sig[f].parameters:
+                p_desc = func_doc[f]
+                if p_desc is not None:
+                    j = p_desc.find(f":param {p}:") + len(f":param {p}:")
+                    if j == -1:
+                        p_desc = ""
+                    else:
+                        k = p_desc[j:].find(":param")
+                        if k != -1:
+                            k += j
+                        else:
+                            k = p_desc[j:].find(":return")
+                            if k != -1:
+                                k += j
+                            else:
+                                k = p_desc[j:].find(":raise")
+                                if k != -1:
+                                    k += j
+                        p_desc = p_desc[j:k].strip().strip("\n")
+                anno = func_sig[f].parameters[p].annotation
+            else:
+                p_desc = p_value.__doc__
+            if p_desc is None:
+                p_desc = ""
+
+            if anno is None and isinstance(p_value, property):
+                anno = p_value.fget.__annotations__.get("return", None)
+            html += "\n" + "\n".join(temp[i + 2 : i + 4]).replace("_prop_", p).replace(
+                "_prop-type_", type_to_str(anno)
+            ).replace("_prop-description_", docstring_to_html(p_desc))
         html += "\n".join(temp[i + 4 : i + 6])
 
     # Returns
@@ -473,7 +539,7 @@ def _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc: dict[str, str
     return html
 
 
-def _gen_class_functions(directory, file, f, class_funcs, namespace):
+def _gen_class_functions(directory, file, f, class_funcs, class_props, namespace):
     temp = [t.strip() for t in load_functions_template()]
 
     func_str = [cf[0] for cf in class_funcs]
@@ -501,7 +567,19 @@ def gen_functions():
         )
         funcs = {f: eval(f"mod.{f}") for f in func_str}
         func_sig = {f: inspect.signature(funcs[f]) for f in func_str}
-        func_doc = {f: funcs[f].__init__.__doc__ if f[0].isupper() else funcs[f].__doc__ for f in func_str}
+        func_doc = {}
+        for f in func_str:
+            if f[0].isupper():
+                doc = funcs[f].__init__.__doc__
+                if doc is None or "Initialize self.  See help(type(self)) for accurate signature." in doc:
+                    doc = funcs[f].__new__.__doc__
+                    if doc is None:
+                        doc = "Initialize self.  See help(type(self)) for accurate signature."
+                    func_doc[f] = doc
+                else:
+                    func_doc[f] = funcs[f].__init__.__doc__
+            else:
+                func_doc[f] = funcs[f].__doc__
 
         temp = [t.strip() for t in load_functions_template()]
         print(func_str)
@@ -509,7 +587,8 @@ def gen_functions():
             html = _gen_func(f, file, temp, namespace, funcs, func_sig, func_doc)
             if f[0].isupper():
                 class_funcs = [m for m in inspect.getmembers(funcs[f], inspect.isfunction) if not m[0].startswith("_")]
-                _gen_class_functions(directory, file, f, class_funcs, namespace)
+                class_props = [m for m in inspect.getmembers(funcs[f], inspect.isdatadescriptor) if not m[0].startswith("_")]
+                _gen_class_functions(directory, file, f, class_funcs, class_props, namespace)
 
                 f_path = os.path.join(f, f)
             else:

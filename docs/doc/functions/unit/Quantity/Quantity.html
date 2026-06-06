@@ -18,17 +18,9 @@ title: qunits.Quantity
 <span class="o"><span class="pre">=</span></span>
 <span class="default_value"><span class="pre">None</span></span>
 </em>
-<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L280-L534' }}"><span class="sig-source">[source]</span></a>
+<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L233-L609' }}"><span class="sig-source">[source]</span></a>
 </dt>
-<dd class="field-body"><p>The base class for quantities.
-
-        - Multiplying or dividing an <code>array_like</code> with a <code>Unit</code> will return a <code>Quantity</code>.
-        - Multiplying or dividing a <code>Quantity</code> by a <code>Unit</code> will return a new <code>Quantity</code>
-         with the same value and the combined unit.
-        - Multiplying or dividing two <code>Quantity</code> instances will return a new <code>Quantity</code>
-         with the combined value and the combined unit.
-        - Multiplying or dividing a <code>Quantity</code> by an <code>array_like</code> will return a new <code>Quantity</code>
-        with the scaled value and the same unit.</p>
+<dd class="field-body"><p>The base class for quantities with units.</p>
 <dl class="field-list">
 <dt class="field-head">Parameters<span class="colon">:</span></dt>
 <dd class="field-par">
@@ -37,6 +29,40 @@ title: qunits.Quantity
 <dd class="field-desc"><p>The value of the quantity.</p></dd>
 <dt>unit<span class="classifier"><em>Unit | None</em></span></dt>
 <dd class="field-desc"><p>The unit of the quantity.</p></dd></dl>
+</dd>
+<dt class="field-head">Properties<span class="colon">:</span></dt>
+<dd class="field-par">
+<dl>
+<dt>T<span class="classifier"><em>Quantity</em></span></dt>
+<dd class="field-desc"><p>The transpose of the quantity.</p></dd>
+<dt>ctypes<span class="classifier"><em>_ctypes[int]</em></span></dt>
+<dd class="field-desc"><p>The ctypes of the quantity if the value is an array.</p></dd>
+<dt>data<span class="classifier"><em>memoryview</em></span></dt>
+<dd class="field-desc"><p>A <code>memoryview</code> of the data of the quantity if the value is an array.</p></dd>
+<dt>dtype<span class="classifier"><em>numpy.dtype[numpy.float64]</em></span></dt>
+<dd class="field-desc"><p>The data type of the quantity.</p></dd>
+<dt>flags<span class="classifier"><em>numpy._core.multiarray.flagsobj</em></span></dt>
+<dd class="field-desc"><p>The flags of the quantity, if the value is an array.</p></dd>
+<dt>itemsize<span class="classifier"><em>int</em></span></dt>
+<dd class="field-desc"><p>The size in bytes of each element in the quantity.</p></dd>
+<dt>m<span class="classifier"><em>float | numpy.ndarray[tuple[Any, ...], numpy.dtype[numpy.float64]]</em></span></dt>
+<dd class="field-desc"><p>The magnitude of the quantity, i.e., the value without the current unit.</p></dd>
+<dt>magnitude<span class="classifier"><em>float | numpy.ndarray[tuple[Any, ...], numpy.dtype[numpy.float64]]</em></span></dt>
+<dd class="field-desc"><p>The magnitude of the quantity, i.e., the value without the current unit.</p></dd>
+<dt>nbytes<span class="classifier"><em>int</em></span></dt>
+<dd class="field-desc"><p>The total number of bytes consumed by the elements of the quantity.</p></dd>
+<dt>ndim<span class="classifier"><em>int</em></span></dt>
+<dd class="field-desc"><p>The number of array dimensions of the quantity.</p></dd>
+<dt>shape<span class="classifier"><em>tuple[int, ...]</em></span></dt>
+<dd class="field-desc"><p>The array shape of the quantity.</p></dd>
+<dt>size<span class="classifier"><em>int</em></span></dt>
+<dd class="field-desc"><p>The number of elements in the quantity.</p></dd>
+<dt>strides<span class="classifier"><em>tuple[int, ...]</em></span></dt>
+<dd class="field-desc"><p>The strides of the quantity.</p></dd>
+<dt>unit<span class="classifier"><em>Unit | None</em></span></dt>
+<dd class="field-desc"><p>The unit of the quantity.</p></dd>
+<dt>value<span class="classifier"><em>array_like | Quantity</em></span></dt>
+<dd class="field-desc"><p>The value of the quantity.</p></dd></dl>
 </dd>
 </dl></dd>
 </dl>
@@ -236,6 +262,22 @@ title: qunits.Quantity
 </li></ul>
 </details>
 </li><li class="has-children">
+<a href="{{ '/doc/modules/prefix.html' | relative_url }}">qunits.prefix</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/prefix/Context/Context.html' | relative_url }}">qunits.Context</a>
+<details>
+<summary>
+<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
+</summary>
+<ul class="extern-a"></ul>
+</details>
+</li>
+<li class="spaced"><a href="{{ '/doc/functions/prefix/merge_exp_maps.html' | relative_url }}">qunits.merge_exp_maps</a></li></ul>
+</details>
+</li><li class="has-children">
 <a href="{{ '/doc/modules/registry.html' | relative_url }}">qunits.registry</a>
 <details>
 <summary>
@@ -256,6 +298,8 @@ title: qunits.Quantity
 <span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
 </summary>
 <ul class="extern-a">
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/m_as.html' | relative_url }}">qunits.Quantity.m_as</a></li>
+<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/magnitude_as.html' | relative_url }}">qunits.Quantity.magnitude_as</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/si.html' | relative_url }}">qunits.Quantity.si</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to.html' | relative_url }}">qunits.Quantity.to</a></li>
 <li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to_base_units.html' | relative_url }}">qunits.Quantity.to_base_units</a></li></ul>
