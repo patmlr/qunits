@@ -2,7 +2,11 @@ title: qunits
 logo: /assets/img/logo.svg
 description: A performant, verbose and generic physical unit system.
 show_downloads: true
-theme: jekyll-theme-minimal
+accent_color: "#2a7fff"
+copyright: 2026 Patrick M&#252;ller. All rights reserved.
+remote_theme: patmlr/qdocs@v0.3.0
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
 exclude:
-  - /doc/doc.py
-  - /tutorials/tutorials.py
+  - README.md

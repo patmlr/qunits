@@ -1,0 +1,10 @@
+<div class="py-source"><pre><span></span><span class="n">deg</span> <span class="o">=</span> <span class="n">Unit</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">({(</span><span class="s2">"deg"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)}),</span> <span class="n">Dimensionless</span><span class="p">,</span> <span class="n">Context</span><span class="o">.</span><span class="n">ANGLE</span><span class="p">)</span>
+
+<span class="n">phi</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">*</span> <span class="n">deg</span> <span class="o">+</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">pi</span>  <span class="c1"># &gt;&gt;&gt; 135.0 deg</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>  <span class="c1"># &gt;&gt;&gt; 0.707106781186548 1</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">phi</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">percent</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>  <span class="c1"># &gt;&gt;&gt; Context mismatch in addition. Cannot add Dimensionless with context ANGLE and ...</span>
+</pre></div>

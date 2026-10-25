@@ -1,0 +1,8 @@
+<div class="py-source"><pre><span></span><span class="n">same</span> <span class="o">=</span> <span class="n">Unit</span><span class="p">(</span><span class="mf">0.0254</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">({(</span><span class="s2">"in"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)}),</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Context</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">same</span> <span class="ow">is</span> <span class="n">inch</span><span class="p">)</span>  <span class="c1"># &gt;&gt;&gt; True</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">Unit</span><span class="p">(</span><span class="mf">0.025</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">({(</span><span class="s2">"in"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)}),</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Context</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>  <span class="c1"># &gt;&gt;&gt; The unit in is already defined with scale 0.0254, dimension Length and context I.</span>
+</pre></div>

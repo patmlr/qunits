@@ -1,323 +1,83 @@
 ---
-layout: default
+layout: api
 title: qunits.Quantity
 ---
-<div class="bd-content-main">
-<article class="bd-article code-prose">
-<!--h1>qunits.Quantity</h1-->
 <dl class="py function">
 <dt class="func-sig">
-<span class="sig-prename"><span class="pre">qunits.</span></span><span class="sig-classname"><span class="pre">Quantity</span></span>
+<span class="sig-prename">qunits.</span>
+<span class="sig-classname">Quantity</span>
 <span class="sig-paren">&nbsp;(&nbsp;</span>
-<em class="sig-param">
-<span class="n"><span class="pre">value</span></span>
-</em>
+<em class="sig-param"><span class="n">value</span></em>
 ,&nbsp;
-<em class="sig-param">
-<span class="n"><span class="pre">unit</span></span>
-<span class="o"><span class="pre">=</span></span>
-<span class="default_value"><span class="pre">None</span></span>
-</em>
-<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L233-L609' }}"><span class="sig-source">[source]</span></a>
+<em class="sig-param"><span class="n">unit</span><span class="o">=</span><span class="default_value">None</span></em>
+<span class="sig-paren">&nbsp;)</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/unit.py#L298-L720' }}"><span class="sig-source">[source]</span></a>
 </dt>
-<dd class="field-body"><p>The base class for quantities with units.</p>
+<dd class="field-body">
+<p>A value with a <a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}"><code>Unit</code></a>. The value is a float or a numpy array of floats. Quantities are usually created by
+multiplying a number or an array with a unit, e.g. <code>3 * u.m</code>, and support:</p>
+<ul><li><code>+</code> and <code>-</code>, also in place, with quantities of the same dimension and context. The result is in the unit of the
+left operand. Numbers and arrays can only be added to and subtracted from dimensionless quantities without
+context, e.g. <code>0.5 * u.m / u.km + 1</code>.</li><li><code>*</code> and <code>/</code>, also in place, with numbers, arrays, units and quantities.</li><li><code>np.add</code>, <code>np.subtract</code>, <code>np.multiply</code> and <code>np.divide</code>, and <code>np.sin</code>, <code>np.cos</code> and <code>np.tan</code> of angles, i.e.
+dimensionless quantities with the context <code>Context.ANGLE</code> such as <code>u.rad</code>.</li></ul>
+<p>Other numpy functions and the methods <code>reduce</code>, <code>accumulate</code>, <code>outer</code> and <code>at</code> of the numpy functions, e.g.
+<code>np.sum</code>, raise a <code>NotImplementedError</code>.</p>
+<p>Printed quantities show scalar values rounded to 15 significant digits, e.g. <code>5.225 km</code> instead of
+<code>5.2250000000000005 km</code>, which hides the rounding errors of the binary floats. The values themselves are not
+rounded. Arrays are printed with the precision of numpy.</p>
 <dl class="field-list">
 <dt class="field-head">Parameters<span class="colon">:</span></dt>
 <dd class="field-par">
 <dl>
-<dt>value<span class="classifier"><em>array_like | Quantity</em></span></dt>
-<dd class="field-desc"><p>The value of the quantity.</p></dd>
-<dt>unit<span class="classifier"><em>Unit | None</em></span></dt>
-<dd class="field-desc"><p>The unit of the quantity.</p></dd></dl>
+<dt>value<span class="classifier"><em><a href="{{ '/doc/modules/unit.html#array_like' | relative_url }}">array_like</a> | <a href="{{ '/doc/functions/unit/Quantity/Quantity.html' | relative_url }}">Quantity</a></em></span></dt>
+<dd class="field-desc"><p>The value, a number, an array-like or a quantity. Numbers are converted to <code>float</code> and
+array-likes to numpy arrays of <code>float64</code>.</p></dd>
+<dt>unit<span class="classifier"><em><a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}">Unit</a> | None</em></span></dt>
+<dd class="field-desc"><p>The unit. A quantity <code>value</code> is converted to it. Defaults to the unit of a quantity <code>value</code>, and
+to the dimensionless unit <code>u.I</code> otherwise.</p></dd>
+</dl>
 </dd>
-<dt class="field-head">Properties<span class="colon">:</span></dt>
+<dt class="field-head">Attributes<span class="colon">:</span></dt>
 <dd class="field-par">
 <dl>
-<dt>T<span class="classifier"><em>Quantity</em></span></dt>
-<dd class="field-desc"><p>The transpose of the quantity.</p></dd>
+<dt>T<span class="classifier"><em><a href="{{ '/doc/functions/unit/Quantity/Quantity.html' | relative_url }}">Quantity</a></em></span></dt>
+<dd class="field-desc"><p>The quantity with the transposed array value. A quantity with a scalar value is returned unchanged.</p></dd>
 <dt>ctypes<span class="classifier"><em>_ctypes[int]</em></span></dt>
-<dd class="field-desc"><p>The ctypes of the quantity if the value is an array.</p></dd>
+<dd class="field-desc"><p>The ctypes interface of the array value. Raises a <code>NotImplementedError</code> for a scalar value.</p></dd>
 <dt>data<span class="classifier"><em>memoryview</em></span></dt>
-<dd class="field-desc"><p>A <code>memoryview</code> of the data of the quantity if the value is an array.</p></dd>
-<dt>dtype<span class="classifier"><em>numpy.dtype[numpy.float64]</em></span></dt>
-<dd class="field-desc"><p>The data type of the quantity.</p></dd>
-<dt>flags<span class="classifier"><em>numpy._core.multiarray.flagsobj</em></span></dt>
-<dd class="field-desc"><p>The flags of the quantity, if the value is an array.</p></dd>
+<dd class="field-desc"><p>A <code>memoryview</code> of the array value. Raises a <code>NotImplementedError</code> for a scalar value.</p></dd>
+<dt>dtype<span class="classifier"><em>np.dtype[np.float64]</em></span></dt>
+<dd class="field-desc"><p>The data type of the value, <code>float64</code>.</p></dd>
+<dt>flags<span class="classifier"><em>flagsobj</em></span></dt>
+<dd class="field-desc"><p>The memory layout flags of the array value. Raises a <code>NotImplementedError</code> for a scalar value.</p></dd>
 <dt>itemsize<span class="classifier"><em>int</em></span></dt>
-<dd class="field-desc"><p>The size in bytes of each element in the quantity.</p></dd>
-<dt>m<span class="classifier"><em>float | numpy.ndarray[tuple[Any, ...], numpy.dtype[numpy.float64]]</em></span></dt>
-<dd class="field-desc"><p>The magnitude of the quantity, i.e., the value without the current unit.</p></dd>
-<dt>magnitude<span class="classifier"><em>float | numpy.ndarray[tuple[Any, ...], numpy.dtype[numpy.float64]]</em></span></dt>
-<dd class="field-desc"><p>The magnitude of the quantity, i.e., the value without the current unit.</p></dd>
+<dd class="field-desc"><p>The size of one element of the value in bytes.</p></dd>
+<dt>m<span class="classifier"><em>float | NDArray[np.float64]</em></span></dt>
+<dd class="field-desc"><p>The value of the quantity in its unit, same as <code>value</code>.</p></dd>
+<dt>magnitude<span class="classifier"><em>float | NDArray[np.float64]</em></span></dt>
+<dd class="field-desc"><p>The value of the quantity in its unit, same as <code>value</code>.</p></dd>
 <dt>nbytes<span class="classifier"><em>int</em></span></dt>
-<dd class="field-desc"><p>The total number of bytes consumed by the elements of the quantity.</p></dd>
+<dd class="field-desc"><p>The size of all elements of the value in bytes.</p></dd>
 <dt>ndim<span class="classifier"><em>int</em></span></dt>
-<dd class="field-desc"><p>The number of array dimensions of the quantity.</p></dd>
+<dd class="field-desc"><p>The number of array dimensions of the value, 0 for a scalar value.</p></dd>
 <dt>shape<span class="classifier"><em>tuple[int, ...]</em></span></dt>
-<dd class="field-desc"><p>The array shape of the quantity.</p></dd>
+<dd class="field-desc"><p>The shape of the value, <code>()</code> for a scalar value.</p></dd>
 <dt>size<span class="classifier"><em>int</em></span></dt>
-<dd class="field-desc"><p>The number of elements in the quantity.</p></dd>
+<dd class="field-desc"><p>The number of elements of the value, 1 for a scalar value.</p></dd>
 <dt>strides<span class="classifier"><em>tuple[int, ...]</em></span></dt>
-<dd class="field-desc"><p>The strides of the quantity.</p></dd>
-<dt>unit<span class="classifier"><em>Unit | None</em></span></dt>
-<dd class="field-desc"><p>The unit of the quantity.</p></dd>
-<dt>value<span class="classifier"><em>array_like | Quantity</em></span></dt>
-<dd class="field-desc"><p>The value of the quantity.</p></dd></dl>
-</dd>
-</dl></dd>
+<dd class="field-desc"><p>The strides of the array value, <code>()</code> for a scalar value.</p></dd>
+<dt>unit<span class="classifier"><em><a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}">Unit</a></em></span></dt>
+<dd class="field-desc"><p>The <a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}"><code>Unit</code></a> of the quantity.</p></dd>
+<dt>value<span class="classifier"><em>float | NDArray[np.float64]</em></span></dt>
+<dd class="field-desc"><p>The value of the quantity in its unit, a float or a numpy array of floats.</p></dd>
 </dl>
-<div class="end-spacer"></div>
-</article>
-</div>
-<div class="bd-content-table">
-<div class="bd-content-table-container">
-<a href="{{ '/doc/doc.html' | relative_url }}">
-<div class="bd-content-table-header row">
-<div class="table-column1"><img src="{{ '/assets/img/list-unordered.svg' | relative_url }}"/></div>
-<div class="column2"><h3 style="margin: auto auto auto 0; "><strong>API navigation</strong></h3></div>
-</div>
-</a>
-<div class="bd-content-table-content">
-<ul class="extern"><li class="has-children">
-<a href="{{ '/doc/modules/dimension.html' | relative_url }}">qunits.dimension</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Acceleration/Acceleration.html' | relative_url }}">qunits.Acceleration</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Action/Action.html' | relative_url }}">qunits.Action</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/AmountOfSubstance/AmountOfSubstance.html' | relative_url }}">qunits.AmountOfSubstance</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Area/Area.html' | relative_url }}">qunits.Area</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Capacitance/Capacitance.html' | relative_url }}">qunits.Capacitance</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Charge/Charge.html' | relative_url }}">qunits.Charge</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Dimensionless/Dimensionless.html' | relative_url }}">qunits.Dimensionless</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/ElectricCurrent/ElectricCurrent.html' | relative_url }}">qunits.ElectricCurrent</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/ElectricField/ElectricField.html' | relative_url }}">qunits.ElectricField</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Energy/Energy.html' | relative_url }}">qunits.Energy</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Force/Force.html' | relative_url }}">qunits.Force</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Frequency/Frequency.html' | relative_url }}">qunits.Frequency</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Jerk/Jerk.html' | relative_url }}">qunits.Jerk</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Length/Length.html' | relative_url }}">qunits.Length</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/LuminousIntensity/LuminousIntensity.html' | relative_url }}">qunits.LuminousIntensity</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/MagneticInduction/MagneticInduction.html' | relative_url }}">qunits.MagneticInduction</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Mass/Mass.html' | relative_url }}">qunits.Mass</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Power/Power.html' | relative_url }}">qunits.Power</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Pressure/Pressure.html' | relative_url }}">qunits.Pressure</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Resistance/Resistance.html' | relative_url }}">qunits.Resistance</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Temperature/Temperature.html' | relative_url }}">qunits.Temperature</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Time/Time.html' | relative_url }}">qunits.Time</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Velocity/Velocity.html' | relative_url }}">qunits.Velocity</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Voltage/Voltage.html' | relative_url }}">qunits.Voltage</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Volume/Volume.html' | relative_url }}">qunits.Volume</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li></ul>
-</details>
-</li><li class="has-children">
-<a href="{{ '/doc/modules/prefix.html' | relative_url }}">qunits.prefix</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/prefix/Context/Context.html' | relative_url }}">qunits.Context</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li>
-<li class="spaced"><a href="{{ '/doc/functions/prefix/merge_exp_maps.html' | relative_url }}">qunits.merge_exp_maps</a></li></ul>
-</details>
-</li><li class="has-children">
-<a href="{{ '/doc/modules/registry.html' | relative_url }}">qunits.registry</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a">
-<li class="spaced"><a href="{{ '/doc/functions/registry/u.html' | relative_url }}">qunits.u</a></li></ul>
-</details>
-</li><li class="has-children">
-<a href="{{ '/doc/modules/unit.html' | relative_url }}">qunits.unit</a>
-<details open="">
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"><li class="has-children spaced table-current"><a href="{{ '/doc/functions/unit/Quantity/Quantity.html' | relative_url }}">qunits.Quantity</a>
-<details open="">
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a">
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/m_as.html' | relative_url }}">qunits.Quantity.m_as</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/magnitude_as.html' | relative_url }}">qunits.Quantity.magnitude_as</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/si.html' | relative_url }}">qunits.Quantity.si</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to.html' | relative_url }}">qunits.Quantity.to</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to_base_units.html' | relative_url }}">qunits.Quantity.to_base_units</a></li></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}">qunits.Unit</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a">
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Unit/si.html' | relative_url }}">qunits.Unit.si</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Unit/to.html' | relative_url }}">qunits.Unit.to</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Unit/to_base_units.html' | relative_url }}">qunits.Unit.to_base_units</a></li></ul>
-</details>
-</li></ul>
-</details>
-</li>
-</ul>
-</div>
-</div>
-</div>
+</dd>
+<dt class="field-head">Raises<span class="colon">:</span></dt>
+<dd class="field-par">
+<dl>
+<dt>ValueError</dt>
+<dd class="field-desc"><p>If <code>value</code> is a quantity with another dimension or context than <code>unit</code>.</p></dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
