@@ -10,6 +10,7 @@ __all__ = [
     "Area",
     "Capacitance",
     "Charge",
+    "Dimension",
     "Dimensionless",
     "ElectricCurrent",
     "ElectricField",
@@ -32,17 +33,31 @@ __all__ = [
 ]
 
 type DimensionVec = tuple[int, ...]
+"""
+The exponents of the SI base dimensions time, length, mass, electric current, temperature, amount of substance and
+luminous intensity, in this order.
+"""
 
 _dimension_cache: dict[DimensionVec, type["Dimension"]] = {}
 
 
 class Dimension:
-    """The base class for dimensions."""
+    """
+    The base class of the dimensions. A dimension is a vector of the exponents of the seven SI base dimensions. The
+    dimensions are classes, not instances, and there is exactly one class per vector. Dimensions that are not
+    predefined are created by unit arithmetic, e.g. `(u.cd / u.m**2).d`.
+    """
 
     name: str
+    """
+    The name of the dimension. Dimensions created by unit arithmetic have generated names, e.g.
+    `LuminousIntensity__DIV__Area`.
+    """
     si_map: ExpMap
+    """The [`ExpMap`] of the SI unit of the dimension, e.g. `frozenset({("J", 1)})` for `Energy`."""
 
     vec: DimensionVec
+    """The [`DimensionVec`] of the dimension, e.g. `(0, 1, 0, 0, 0, 0, 0)` for `Length`."""
 
 
 # Special dimensions for dimensionless quantities
@@ -148,7 +163,7 @@ class Area(Dimension):
     """The dimension of area."""
 
     name = "Area"
-    si_map = frozenset({("m^2", 2)})
+    si_map = frozenset({("m", 2)})
 
     vec = tuple(2 * l for l in Length.vec)
 
@@ -157,7 +172,7 @@ class Volume(Dimension):
     """The dimension of volume."""
 
     name = "Volume"
-    si_map = frozenset({("m^3", 3)})
+    si_map = frozenset({("m", 3)})
 
     vec = tuple(3 * l for l in Length.vec)
 

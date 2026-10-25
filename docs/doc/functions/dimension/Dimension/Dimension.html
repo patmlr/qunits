@@ -1,0 +1,29 @@
+---
+layout: api
+title: qunits.dimension.Dimension
+---
+<dl class="py function">
+<dt class="func-sig">
+<span class="sig-prename">qunits.dimension.</span>
+<span class="sig-classname">Dimension</span><a href="{{ site.github.repository_url | append: '/blob/main/src/qunits/dimension.py#L44-L60' }}"><span class="sig-source">[source]</span></a>
+</dt>
+<dd class="field-body">
+<p>The base class of the dimensions. A dimension is a vector of the exponents of the seven SI base dimensions. The
+dimensions are classes, not instances, and there is exactly one class per vector. Dimensions that are not
+predefined are created by unit arithmetic, e.g. <code>(u.cd / u.m**2).d</code>.</p>
+<dl class="field-list">
+<dt class="field-head">Attributes<span class="colon">:</span></dt>
+<dd class="field-par">
+<dl>
+<dt>name<span class="classifier"><em>str</em></span></dt>
+<dd class="field-desc"><p>The name of the dimension. Dimensions created by unit arithmetic have generated names, e.g.
+<code>LuminousIntensity__DIV__Area</code>.</p></dd>
+<dt>si_map<span class="classifier"><em><a href="{{ '/doc/modules/prefix.html#ExpMap' | relative_url }}">ExpMap</a></em></span></dt>
+<dd class="field-desc"><p>The <a href="{{ '/doc/modules/prefix.html#ExpMap' | relative_url }}"><code>ExpMap</code></a> of the SI unit of the dimension, e.g. <code>frozenset({("J", 1)})</code> for <code>Energy</code>.</p></dd>
+<dt>vec<span class="classifier"><em><a href="{{ '/doc/modules/dimension.html#DimensionVec' | relative_url }}">DimensionVec</a></em></span></dt>
+<dd class="field-desc"><p>The <a href="{{ '/doc/modules/dimension.html#DimensionVec' | relative_url }}"><code>DimensionVec</code></a> of the dimension, e.g. <code>(0, 1, 0, 0, 0, 0, 0)</code> for <code>Length</code>.</p></dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>

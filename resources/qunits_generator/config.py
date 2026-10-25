@@ -61,7 +61,7 @@ SYMBOL_FACTORS: dict[str, tuple[float, str]] = {
     "pi": (pi, "pi"),
     "m": (1.0, "1.0"),
     "g": (1e-3, "1e-3"),
-    "u": (sc.u * 1e3, "sc.u * 1e3"),
+    "u": (sc.u, "sc.u"),
     "s": (1.0, "1.0"),
     "A": (1.0, "1.0"),
     "K": (1.0, "1.0"),
@@ -82,6 +82,17 @@ SYMBOL_FACTORS: dict[str, tuple[float, str]] = {
     "e": (sc.e, "sc.e"),
     "T": (1.0, "1.0"),
     "G": (1e-4, "1e-4"),
+}
+
+SYMBOL_DOCS: dict[str, str] = {
+    "percent": "Percent, 0.01.",
+    "pi": "The angle pi rad.",
+    "u": "The atomic mass unit.",
+    "c": "The speed of light in vacuum.",
+    "eV": "The electronvolt.",
+    "h": "The Planck constant.",
+    "e": "The elementary charge.",
+    "G": "The gauss, 1e-4 T.",
 }
 
 SYMBOL_CONTEXTS: dict[str, Context] = {

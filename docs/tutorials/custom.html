@@ -1,0 +1,43 @@
+---
+layout: tutorial
+title: Tutorials.Custom
+---
+
+<h1>Custom units</h1>
+
+<p>
+    This tutorial shows how to define your own units. A <a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}"><code>Unit</code></a>
+    is defined by its scale relative to the SI unit of its dimension, its exponent map, its dimension and its context.
+    The exponent map is a frozenset of (symbol, exponent) pairs. It identifies the unit and is how the unit is printed.
+    Custom units can be combined with the units of the registry <code>u</code> like any other unit.
+</p>
+
+{% include code/custom-0.html %}
+
+<p>
+    The dimension of a unit does not have to be one of the predefined dimensions in
+    <a href="{{ '/doc/modules/dimension.html' | relative_url }}"><code>qunits.dimension</code></a>.
+    Any dimension can be obtained from the dimension <code>d</code> of a composite unit.
+</p>
+
+{% include code/custom-1.html %}
+
+<p>
+    Angles are dimensionless units with the context <code>Context.ANGLE</code>.
+    The trigonometric functions <code>np.sin</code>, <code>np.cos</code> and <code>np.tan</code> only accept angles,
+    and quantities with different contexts cannot be added or subtracted.
+</p>
+
+{% include code/custom-2.html %}
+
+<p>
+    There is exactly one unit per exponent map. Defining a unit again returns the existing unit,
+    and defining a different unit with an existing exponent map raises a <code>ValueError</code>.
+</p>
+
+{% include code/custom-3.html %}
+
+<div class="prev-next">
+    <a href="{{ '/tutorials/start.html' | relative_url }}"><div class="prev-next-button">&larr;&nbsp;&nbsp;Previous</div></a>
+    <a href="{{ '/tutorials/benchmark.html' | relative_url }}"><div class="prev-next-button">Next&nbsp;&nbsp;&rarr;</div></a>
+</div>

@@ -3,6 +3,11 @@
   title: Getting started
   identifier: /start
 
+- name: custom
+  link: /tutorials/custom.html
+  title: Custom units
+  identifier: /custom
+
 - name: benchmark
   link: /tutorials/benchmark.html
   title: Benchmark

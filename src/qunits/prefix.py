@@ -29,11 +29,16 @@ PREFIX_DICT_EXP: dict[int, str] = {
 PREFIX_DICT: dict[str, int] = {v: k for k, v in PREFIX_DICT_EXP.items()}
 
 type ExpMap = frozenset[tuple[str, int]]
+"""
+An exponent map, a frozenset of (symbol, exponent) pairs, e.g. `frozenset({("m", 1), ("s", -1)})` for m/s.
+It identifies a unit and is how the unit is printed.
+"""
 
 
 def merge_exp_maps(a: ExpMap, b: ExpMap, sign_b: Literal[1, -1]) -> ExpMap:
-    """Merge two exponent maps.
-    
+    """
+    Merge two exponent maps. Exponents that add up to zero are removed.
+
     :param a: The first exponent map.
     :param b: The second exponent map.
     :param sign_b: Multiply (+1) or divide (-1) the second exponent map.
@@ -50,10 +55,19 @@ def merge_exp_maps(a: ExpMap, b: ExpMap, sign_b: Literal[1, -1]) -> ExpMap:
 
 
 class Context(IntEnum):
-    """The context of a unit."""
+    """
+    The context of a unit distinguishes quantities of the same dimension that must not be mixed. Quantities can only
+    be added, subtracted or converted into each other if their units have the same context.
+
+    A product of a unit with a context and a unit without one keeps the context, e.g. `u.pi * u.kHz`, and so does
+    the quotient of a unit with a context by a unit without one, e.g. `u.rad / u.s`. Other products, quotients and
+    powers have the context `I`.
+    """
 
     I = 0
+    """No context."""
     ANGLE = 1
+    """Angles, e.g. `u.rad` and `u.pi`. `np.sin`, `np.cos` and `np.tan` require this context."""
 
 
 CONTEXT_DICT: dict[Context, str] = {

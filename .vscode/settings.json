@@ -10,4 +10,6 @@
     "python.testing.unittestEnabled": true,
 
     "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
+
+    "files.eol": "\n",
 }

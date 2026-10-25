@@ -1,271 +1,50 @@
 ---
-layout: default
+layout: api
 title: qunits.registry
 ---
-<div class="bd-content-main">
-<article class="bd-article code-prose">
-<h1>qunits.registry</h1>
-<p>
-The <code>qunits.registry</code> module provides the unit registry <code>u</code>,
-which includes all predefined units with prefixes. If you don't want to add custom units, you simply need to import <code>u</code>.
-</p>
+  <h1>qunits.registry</h1>
+  <p>
+    The <code>qunits.registry</code> module provides the unit registry
+    <a href="{{ '/doc/functions/registry/u.html' | relative_url }}"><code>u</code></a>,
+    which includes all predefined units with prefixes. If you don't want to add custom units, you simply need to import <code>u</code>.
+  </p>
 
-<div class="py-source"><pre>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qunits</span><span class="w"> </span><span class="kn">import</span> <span class="n">u</span>
-</pre></div>
+  <div class="py-source"><pre>
+  <span class="kn">from</span><span class="w"> </span><span class="nn">qunits</span><span class="w"> </span><span class="kn">import</span> <span class="n">u</span>
+  </pre></div>
 
-</article>
-</div>
+  <p>
+    The registry contains the following units, each with the prefixes for powers of 1000 in the given range, e.g.
+    <code>u.fs</code>, <code>u.ps</code>, ..., <code>u.s</code>. The attosecond is <code>u.attosecond</code>, because
+    <code>as</code> is a keyword. <code>u.I</code> is the dimensionless unit.
+  </p>
 
-<div class="bd-content-table">
-<div class="bd-content-table-container">
-<a href="{{ '/doc/doc.html' | relative_url }}">
-<div class="bd-content-table-header row">
-<div class="table-column1"><img src="{{ '/assets/img/list-unordered.svg' | relative_url }}"/></div>
-<div class="column2"><h3 style="margin: auto auto auto 0; "><strong>API navigation</strong></h3></div>
-</div>
-</a>
-<div class="bd-content-table-content">
-<ul class="extern"><li class="has-children">
-<a href="{{ '/doc/modules/dimension.html' | relative_url }}">qunits.dimension</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Acceleration/Acceleration.html' | relative_url }}">qunits.Acceleration</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Action/Action.html' | relative_url }}">qunits.Action</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/AmountOfSubstance/AmountOfSubstance.html' | relative_url }}">qunits.AmountOfSubstance</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Area/Area.html' | relative_url }}">qunits.Area</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Capacitance/Capacitance.html' | relative_url }}">qunits.Capacitance</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Charge/Charge.html' | relative_url }}">qunits.Charge</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Dimensionless/Dimensionless.html' | relative_url }}">qunits.Dimensionless</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/ElectricCurrent/ElectricCurrent.html' | relative_url }}">qunits.ElectricCurrent</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/ElectricField/ElectricField.html' | relative_url }}">qunits.ElectricField</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Energy/Energy.html' | relative_url }}">qunits.Energy</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Force/Force.html' | relative_url }}">qunits.Force</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Frequency/Frequency.html' | relative_url }}">qunits.Frequency</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Jerk/Jerk.html' | relative_url }}">qunits.Jerk</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Length/Length.html' | relative_url }}">qunits.Length</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/LuminousIntensity/LuminousIntensity.html' | relative_url }}">qunits.LuminousIntensity</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/MagneticInduction/MagneticInduction.html' | relative_url }}">qunits.MagneticInduction</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Mass/Mass.html' | relative_url }}">qunits.Mass</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Power/Power.html' | relative_url }}">qunits.Power</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Pressure/Pressure.html' | relative_url }}">qunits.Pressure</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Resistance/Resistance.html' | relative_url }}">qunits.Resistance</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Temperature/Temperature.html' | relative_url }}">qunits.Temperature</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Time/Time.html' | relative_url }}">qunits.Time</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Velocity/Velocity.html' | relative_url }}">qunits.Velocity</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Voltage/Voltage.html' | relative_url }}">qunits.Voltage</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/dimension/Volume/Volume.html' | relative_url }}">qunits.Volume</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li></ul>
-</details>
-</li><li class="has-children">
-<a href="{{ '/doc/modules/prefix.html' | relative_url }}">qunits.prefix</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/prefix/Context/Context.html' | relative_url }}">qunits.Context</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"></ul>
-</details>
-</li>
-<li class="spaced"><a href="{{ '/doc/functions/prefix/merge_exp_maps.html' | relative_url }}">qunits.merge_exp_maps</a></li></ul>
-</details>
-</li><li class="has-children spaced table-current">
-<a href="{{ '/doc/modules/registry.html' | relative_url }}">qunits.registry</a>
-<details open="">
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a">
-<li class="spaced"><a href="{{ '/doc/functions/registry/u.html' | relative_url }}">qunits.u</a></li></ul>
-</details>
-</li><li class="has-children">
-<a href="{{ '/doc/modules/unit.html' | relative_url }}">qunits.unit</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a"><li class="has-children spaced"><a href="{{ '/doc/functions/unit/Quantity/Quantity.html' | relative_url }}">qunits.Quantity</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a">
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/m_as.html' | relative_url }}">qunits.Quantity.m_as</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/magnitude_as.html' | relative_url }}">qunits.Quantity.magnitude_as</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/si.html' | relative_url }}">qunits.Quantity.si</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to.html' | relative_url }}">qunits.Quantity.to</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Quantity/to_base_units.html' | relative_url }}">qunits.Quantity.to_base_units</a></li></ul>
-</details>
-</li><li class="has-children spaced"><a href="{{ '/doc/functions/unit/Unit/Unit.html' | relative_url }}">qunits.Unit</a>
-<details>
-<summary>
-<span class="toctree-toggle" role="presentation"><img src="{{ '/assets/img/chevron-down.svg' | relative_url }}" class="chevron"/></span>
-</summary>
-<ul class="extern-a">
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Unit/si.html' | relative_url }}">qunits.Unit.si</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Unit/to.html' | relative_url }}">qunits.Unit.to</a></li>
-<li class="indent-a"><a href="{{ '/doc/functions/unit/Unit/to_base_units.html' | relative_url }}">qunits.Unit.to_base_units</a></li></ul>
-</details>
-</li></ul>
-</details>
-</li>
-</ul>
-</div>
-</div>
-</div>
+  <table>
+    <tr><th>Unit</th><th>Dimension</th><th>Prefixes</th></tr>
+    <tr><td><code>percent</code></td><td>Dimensionless</td><td>none</td></tr>
+    <tr><td><code>rad</code></td><td>Dimensionless, angle</td><td>nrad &ndash; rad</td></tr>
+    <tr><td><code>pi</code></td><td>Dimensionless, angle</td><td>none</td></tr>
+    <tr><td><code>m</code></td><td>Length</td><td>qm &ndash; km</td></tr>
+    <tr><td><code>g</code></td><td>Mass</td><td>fg &ndash; kg</td></tr>
+    <tr><td><code>u</code> (atomic mass unit)</td><td>Mass</td><td>none</td></tr>
+    <tr><td><code>s</code></td><td>Time</td><td>qs &ndash; s</td></tr>
+    <tr><td><code>A</code></td><td>ElectricCurrent</td><td>fA &ndash; MA</td></tr>
+    <tr><td><code>K</code></td><td>Temperature</td><td>fK &ndash; K</td></tr>
+    <tr><td><code>mol</code></td><td>AmountOfSubstance</td><td>fmol &ndash; kmol</td></tr>
+    <tr><td><code>cd</code></td><td>LuminousIntensity</td><td>fcd &ndash; Gcd</td></tr>
+    <tr><td><code>Hz</code></td><td>Frequency</td><td>fHz &ndash; QHz</td></tr>
+    <tr><td><code>c</code> (speed of light)</td><td>Velocity</td><td>none</td></tr>
+    <tr><td><code>N</code></td><td>Force</td><td>fN &ndash; PN</td></tr>
+    <tr><td><code>Pa</code></td><td>Pressure</td><td>fPa &ndash; PPa</td></tr>
+    <tr><td><code>J</code></td><td>Energy</td><td>fJ &ndash; PJ</td></tr>
+    <tr><td><code>eV</code></td><td>Energy</td><td>feV &ndash; PeV</td></tr>
+    <tr><td><code>W</code></td><td>Power</td><td>fW &ndash; PW</td></tr>
+    <tr><td><code>h</code> (Planck constant)</td><td>Action</td><td>none</td></tr>
+    <tr><td><code>V</code></td><td>Voltage</td><td>fV &ndash; GV</td></tr>
+    <tr><td><code>F</code></td><td>Capacitance</td><td>fF &ndash; kF</td></tr>
+    <tr><td><code>Ohm</code></td><td>Resistance</td><td>fOhm &ndash; GOhm</td></tr>
+    <tr><td><code>C</code></td><td>Charge</td><td>fC &ndash; GC</td></tr>
+    <tr><td><code>e</code> (elementary charge)</td><td>Charge</td><td>none</td></tr>
+    <tr><td><code>T</code></td><td>MagneticInduction</td><td>fT &ndash; PT</td></tr>
+    <tr><td><code>G</code> (gauss)</td><td>MagneticInduction</td><td>pG &ndash; EG</td></tr>
+  </table>

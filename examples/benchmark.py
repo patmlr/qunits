@@ -1,3 +1,4 @@
+# docs: benchmark-0
 import os
 import time
 
@@ -9,8 +10,10 @@ from qunits.dimension import _dimension_cache
 from qunits.unit import _unit_cache
 
 p = UnitRegistry(cache_folder=os.path.join(os.path.dirname(__file__), "__pintcache__"))
+# docs: end
 
 
+# docs: benchmark-1
 def bench_init(name: str, ureg: UnitRegistry | type, n: int = 100_000) -> float:
     m = ureg.m
     mm = ureg.mm
@@ -87,9 +90,11 @@ def bench_conversion(name: str, ureg: UnitRegistry | type, q: type, n: int = 100
     dt = time.perf_counter() - t0
     print(f"conversion({name}): {dt:.2f} s")
     return dt
+# docs: end
 
 
 if __name__ == "__main__":
+    # docs: benchmark-2
     n_samples = 100_000
     dt_pint = bench_init("pint", p, n=n_samples)
     dt_qunits = bench_init("qunits", u, n=n_samples)
@@ -117,3 +122,4 @@ if __name__ == "__main__":
 
     print(f"qunits dimension cache size: {len(_dimension_cache)}")
     print(f"qunits unit cache size: {len(_unit_cache)}")
+    # docs: end
